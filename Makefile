@@ -30,6 +30,7 @@ install-dependencies:
 	if [ -z "$(shell dpkg -l | grep texlive-full)" ]; then sudo apt-get install texlive-full; fi
 	if [ -z "$(shell dpkg -l | grep latexmk)" ]; then sudo apt-get install latexmk; fi
 	if [ -z "$(shell dpkg -l | grep biber)" ]; then sudo apt-get install biber; fi
+	if [ -z "$(shell dpkg -l | grep inkscape)" ]; then sudo apt-get install inkscape; fi
 
 actions: install-dependencies compile
 
