@@ -1,6 +1,4 @@
 # class-summary-base
-Zusammenfassungen für Fächer - Basisrepo
-
 ## Building
 
 To build the project you can use the following commands:
