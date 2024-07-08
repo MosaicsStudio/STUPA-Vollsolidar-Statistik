@@ -1,0 +1,31 @@
+\documentclass[
+    11pt,           % font size
+    paper=a4,       % paper size
+    oneside,        % binding layout: oneside, twoside
+    DIV=14,         % influence typearea: 0 - 16
+    onecolumn,      % column layout: twocolumn, onecolumn
+    % draft         % draft mode for editing
+]{TeX/Classes/HSRTReport/HSRTReport}
+
+\renewcommand{\baselinestretch}{1.5} 
+
+\title{Umfrage zum Deutschlandticket im Vollsolidarmodell auf dem Campus Reutlingen}
+\createdon{02.04.2024}
+
+\input{TeX/Preamble.tex}
+
+\begin{document}
+
+\maketitle
+
+\setstretch{1.0}
+
+% ===== Content =====
+
+\input{Content/00_uebersicht}
+
+% ===== Bibliography =====
+
+\printbibliography[heading=bibintoc]
+
+\end{document}  

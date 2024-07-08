@@ -1,0 +1,35 @@
+% !TEX root = ../../../../Main.tex
+
+\newcommand{\createdon}[1]{\gdef\@createdon{#1}}
+
+\renewcommand{\maketitle}{
+    \begin{titlepage}
+        \begin{tikzpicture}[overlay, remember picture]
+            \node[anchor=north west, inner sep=0pt, xshift=1.8cm, yshift=-1.5cm] at (current page.north west) {
+                \includegraphics[width=5cm]{TeX/Assets/Images/Stupa.png}
+            };
+        \end{tikzpicture}
+
+        \vskip 10em
+        
+        % title
+        \begin{flushleft}
+            {\textbf{\blenderfont\Huge\@title}}
+            \color{gray}
+            \rule{\textwidth}{0.5mm}
+        \end{flushleft}
+
+        \vskip 7em
+
+        \vfill
+        % table
+        \noindent
+        \setstretch{1.0}
+        \begin{tabular}{@{} p{40mm} l}
+            \textbf{Class}              & \parbox[t]{70mm}{Introduction to Statistics and Biometrics} \vspace{5pt}\\
+            \textbf{Due date}           & \parbox[t]{70mm}{04.07.2024} \vspace{5pt}\\
+            \textbf{Conducted by}       & Frederik Beimgraben (810475) \\
+                                        & Luis Meyer          (801701)
+        \end{tabular}
+    \end{titlepage}
+}
