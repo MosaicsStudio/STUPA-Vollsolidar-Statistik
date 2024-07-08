@@ -19,6 +19,9 @@ ENGLISH_PDF_SOURCE=$(ENGLISH_BUILD_DIR)/$(PDF)
 GERMAN_PDF_TARGET=$(GERMAN_OUT_DIR)/$(PDF)
 ENGLISH_PDF_TARGET=$(ENGLISH_OUT_DIR)/$(PDF)
 
+# Flag to use STUPA-Logo instead of the default one
+STUPA?=0
+
 all: compile
 	xdg-open $(GERMAN_PDF_TARGET)
 	xdg-open $(ENGLISH_PDF_TARGET)
@@ -31,8 +34,14 @@ clean:
 german:
 # If not Exists, create 'Build' directory
 	[ -d $(GERMAN_BUILD_DIR) ] || mkdir -p $(GERMAN_BUILD_DIR)
-# Build the document
+# If STUPA is set to 1, set pretex as `-pretex="\newcommand{\logoType}{STUPA}\newcommand{\lang}{de}"`
+# Else, set pretex as `-pretex="\newcommand{\lang}{de}"
+ifeq ($(STUPA), 1)
+	echo "Using STUPA Logo"
+	$(LATEX) $(LATEX_FLAGS) -output-directory=$(GERMAN_BUILD_DIR) -pretex="\newcommand{\logoType}{STUPA}\newcommand{\lang}{de}" -usepretex $(SOURCE)
+else
 	$(LATEX) $(LATEX_FLAGS) -output-directory=$(GERMAN_BUILD_DIR) -pretex="\newcommand{\lang}{de}" -usepretex $(SOURCE)
+endif
 # If not Exists, create 'Output/German' directory
 	[ -d $(GERMAN_OUT_DIR) ] || mkdir -p $(GERMAN_OUT_DIR)
 # Copy the PDF to the 'Output/German' directory
@@ -41,8 +50,14 @@ german:
 english:
 # If not Exists, create 'Build' directory
 	[ -d $(ENGLISH_BUILD_DIR) ] || mkdir -p $(ENGLISH_BUILD_DIR)
-# Build the document
+# If STUPA is set to 1, set pretex as `-pretex="\newcommand{\logoType}{STUPA}\newcommand{\lang}{en}"`
+# Else, set pretex as `-pretex="\newcommand{\lang}{en}"
+ifeq ($(STUPA), 1)
+	echo "Using STUPA Logo"
+	$(LATEX) $(LATEX_FLAGS) -output-directory=$(ENGLISH_BUILD_DIR) -pretex="\newcommand{\logoType}{STUPA}\newcommand{\lang}{en}" -usepretex $(SOURCE)
+else
 	$(LATEX) $(LATEX_FLAGS) -output-directory=$(ENGLISH_BUILD_DIR) -pretex="\newcommand{\lang}{en}" -usepretex $(SOURCE)
+endif
 # If not Exists, create 'Output/English' directory
 	[ -d $(ENGLISH_OUT_DIR) ] || mkdir -p $(ENGLISH_OUT_DIR)
 # Copy the PDF to the 'Output/English' directory

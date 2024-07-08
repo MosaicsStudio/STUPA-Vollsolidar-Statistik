@@ -4,6 +4,12 @@
 \usepackage{silence}
 \WarningsOff*
 
+% If not using XeTeX, print an error message and stop compiling
+\ifx\XeTeXversion\undefined
+    \PackageError{HSRTReport}{This class can only be used with XeLaTeX.}{}
+    \stop
+\fi
+
 %----------------------------------------
 %   CLASS DEFINITION AND PARAMETERS
 %----------------------------------------
@@ -69,7 +75,14 @@
 \def\imagesPath{TeX/Assets/Images}
 \def\classPath{TeX/Classes/HSRTReport}
 
-\def\logoPath{TeX/Assets/Images/HSRT.png}
+\def\stupa{STUPA}
+% If \logoType is equal to STUPA, set logo to STUPA logo else set it to HSRT logo
+\ifx\logoType\stupa
+    \def\logoPath{TeX/Assets/Images/STUPA.png}
+\else
+    \def\logoPath{TeX/Assets/Images/HSRT.png}
+\fi
+
 \def\skylinePath{TeX/Assets/Images/Skyline.svg}
 
 \newfontfamily\blenderfont[
