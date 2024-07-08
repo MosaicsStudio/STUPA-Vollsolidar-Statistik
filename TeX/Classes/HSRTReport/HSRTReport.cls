@@ -1,6 +1,6 @@
 % !TEX root = ../../../Main.tex
 
-% Supress all warnings; Only show errors
+% Suppress all warnings; Only show errors
 \usepackage{silence}
 \WarningsOff*
 
@@ -11,6 +11,13 @@
 \fi
 
 %----------------------------------------
+%   PATHS
+%----------------------------------------
+\def\fontsPath{TeX/Assets/Fonts}
+\def\imagesPath{TeX/Assets/Images}
+\def\classPath{TeX/Classes/HSRTReport}
+
+%----------------------------------------
 %   CLASS DEFINITION AND PARAMETERS
 %----------------------------------------
 % Original: ZHAWReport.cls by Martin Oswald
@@ -19,20 +26,20 @@
 \ProvidesClass{\classname}[2024/07/08 HSRT Report Class]
 \providecommand{\baseclass}{scrreprt}
 
-% default options
+% Default options
 \PassOptionsToClass{pointlessnumbers}{\baseclass}
 
-% forward options to the base class
+% Forward options to the base class
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{\baseclass}}
 \ProcessOptions\relax
 
-% load the base class with options
+% Load the base class with options
 \LoadClass{\baseclass}
 
 %----------------------------------------
 %   REQUIRED PACKAGES
 %----------------------------------------
-\RequirePackage[english]{babel}
+\RequirePackage[ngerman,english]{babel}
 \RequirePackage{lmodern}
 \RequirePackage{amsmath}
 \RequirePackage{graphicx}
@@ -44,12 +51,12 @@
 \RequirePackage{bophook}
 \RequirePackage{ifthen}
 
-
 %----------------------------------------
 %   REFS
 %----------------------------------------
 \RequirePackage{hyperref}
-\hypersetup{pdfpagemode={UseOutlines},
+\hypersetup{
+    pdfpagemode={UseOutlines},
     bookmarksopen=true,
     bookmarksopenlevel=0,
     hypertexnames=false,
@@ -68,26 +75,8 @@
 \renewcommand*\rmdefault{lmr}
 \renewcommand*\sfdefault{lmss}
 
-\newcommand{\footerYShift}{0.4em} % Added the new variable
-\newcommand{\footerXShift}{0.7em} % Added the new variable
-
-\def\fontsPath{TeX/Assets/Fonts}
-\def\imagesPath{TeX/Assets/Images}
-\def\classPath{TeX/Classes/HSRTReport}
-
-\def\stupa{STUPA}
-% If \logoType is equal to STUPA, set logo to STUPA logo else set it to HSRT logo
-\ifthenelse{\equal{\logoType}{\stupa}}{
-    \def\logoPath{TeX/Assets/Images/STUPA.png}
-}{
-    \def\logoPath{TeX/Assets/Images/HSRT.png}
-}
-
-\typeout{Logo Path: \logoPath}
-
-\def\skylinePath{TeX/Assets/Images/Skyline.svg}
-
-\typeout{Skyline Path: \skylinePath}
+\newcommand{\footerYShift}{0.4em}
+\newcommand{\footerXShift}{0.7em}
 
 \newfontfamily\blenderfont[
     Path=\fontsPath/Blender/,
@@ -123,9 +112,68 @@
     BoldItalicFont=*-BoldItalic
 ]
 
+
+%----------------------------------------
+%   PAGE SETUP
+%----------------------------------------
+
 \pagestyle{fancy}
 
 \renewcommand{\headrulewidth}{0pt}
+
+%----------------------------------------
+%   LOGOS
+%----------------------------------------
+
+% ==== Add more logos to be placed besides the main logo on the title page ====
+\newcommand{\logosArray}{}
+
+\newcommand{\lastToken}{mainLogo}
+
+\DeclareRobustCommand{\AddLogo}[3]{
+    \ifx#2\empty
+        \edef\imgHeight{2cm}
+    \else
+        \edef\imgHeight{#2}
+    \fi
+
+    \edef\currentTokenEval{\lastToken Next}
+    \edef\lastTokenEval{\lastToken}
+
+    \appto{\logosArray}{
+        \node[anchor=west] (\currentTokenEval) at (\lastTokenEval.east) {
+            \includegraphics[height=\imgHeight]{#1}
+        };
+        \ifx#3\empty
+            % Do nothing
+        \else % Add a white mask on top to adjust opacity
+            \filldraw[white, opacity=#3] (\lastToken.north east) rectangle (\currentTokenEval.south west);
+        \fi
+    }
+
+    \renewcommand{\lastToken}{\currentTokenEval}
+}
+
+\DeclareRobustCommand{\SetupDocumentLogos}{
+    \logosArray
+}
+% =============================================================================
+
+
+\def\stupa{STUPA}
+% If \logoType is equal to STUPA, set logo to STUPA logo else set it to HSRT logo
+\ifthenelse{\equal{\logoType}{\stupa}}{
+    \def\logoPath{TeX/Assets/Images/STUPA.png}
+}{
+    \def\logoPath{TeX/Assets/Images/HSRT.png}
+}
+
+\typeout{Logo Path: \logoPath}
+
+\def\skylinePath{TeX/Assets/Images/Skyline.svg}
+
+\typeout{Skyline Path: \skylinePath}
+
 
 % Define the logo and its position
 \AtBeginPage{
@@ -141,6 +189,9 @@
     \end{tikzpicture}
 }
 
+%----------------------------------------
+%   TITLE PAGE
+%----------------------------------------
 \setkomafont{pagenumber}{\color{gray}\blenderfont\selectfont}
 
 \fancyhf{}
@@ -168,6 +219,9 @@
 
 \input{\classPath/Pages/Titlepage.tex}
 
+%----------------------------------------
+%   TABLE OF CONTENTS
+%----------------------------------------
 \usepackage{tocloft}
 \renewcommand{\cftpartleader}{\cftdotfill{\cftdotsep}} % for parts
 \renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}} % for chapters

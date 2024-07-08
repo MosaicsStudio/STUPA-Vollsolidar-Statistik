@@ -1,16 +1,5 @@
-% Language Definitions
-\def\de{de}
-\def\en{en}
-
-\providecommand{\lang}{\de}
-
-\def\langToken{\lang}
-
-% Logo type (either STUPA or HSRT)
-\providecommand{\logoType}{HSRT}
-
-\typeout{Language: \lang}
-\typeout{Logo Type: \logoType}
+% Setup CLI Parameters
+\input{TeX/Parameters}
 
 \documentclass[
     11pt,
@@ -20,28 +9,8 @@
     onecolumn
 ]{TeX/Classes/HSRTReport/HSRTReport}
 
-\renewcommand{\baselinestretch}{1.5}
-
-\title{\ChooseTranslation{
-    Zusammenfassung Standards und Prozesse
-}{
-    Summary Standards and Processes
-}}
-\createdon{08.07.2024}
-
-\newcommand{\className}{\ChooseTranslation{
-    Beispielkurs
-}{
-    Example Course
-}}
-
-\input{TeX/Preamble.tex}
-
-
-\AddAuthor{Frederik}{Beimgraben}{}
-\AddAuthor{Luis}{Meyer}{}
-
-\SetupDocumentAuthors
+\input{TeX/Common}
+\input{TeX/Report}
 
 \begin{document}
 

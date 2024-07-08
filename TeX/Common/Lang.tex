@@ -1,0 +1,22 @@
+% !TeX root = ../../Main.tex
+
+\DeclareRobustCommand{\ChooseTranslation}[2]{
+  \strcompare{\langType }{\de}{
+    #1
+  }{
+    #2
+  }
+}
+
+\DeclareRobustCommand{\SetTranslationKey}[3]{
+  % Localize based on \langType = de or en
+  \newcommand{#1}{
+    \ChooseTranslation{#2}{#3}
+  }
+}
+
+\strcompare{\langType }{\de}{
+  \selectlanguage{ngerman}
+}{
+  \selectlanguage{english}
+}

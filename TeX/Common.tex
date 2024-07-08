@@ -1,0 +1,17 @@
+% !TEX root = ../../Main.tex
+
+\ExplSyntaxOn
+\cs_new_eq:NN \strcompare \str_if_eq:eeTF
+\ExplSyntaxOff
+
+% Function to input from TeX/Common/
+\DeclareRobustCommand{\common}[1]{\input{TeX/Common/#1}}
+
+% Function to input from TeX/Report/
+\DeclareRobustCommand{\report}[1]{\input{TeX/Report/#1}}
+
+\common{Imports}
+\common{Lang}
+\common{Authors}
+
+\input{TeX/Settings}

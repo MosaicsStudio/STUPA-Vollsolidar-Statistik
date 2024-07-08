@@ -1,0 +1,34 @@
+% !TEX root = ../../Main.tex
+
+% Authors
+% Create a new author array
+\newcommand{\authorsArray}{}
+
+\DeclareRobustCommand{\matNr}[1]{%
+  \ifx#1\empty
+    % Do nothing
+  \else
+    / #1
+  \fi
+}
+
+% Define a new command to add an author
+\DeclareRobustCommand{\AddAuthor}[3]{%
+  % #1 = First Name
+  % #2 = Last Name
+  % #3 = ID
+  \appto{\authorsArray}{& #2, #1 \matNr{#3} \\}%
+}
+
+% After all authors have been added, create the \author command
+\DeclareRobustCommand{\SetupDocumentAuthors}{%
+  % link authorsArray into a string
+  \edef\authors{\authorsArray}
+  % Use the string in the \author command
+  \author{\authors}
+}
+
+% Hook the author setup command to the document
+\AtBeginDocument{%
+  \SetupDocumentAuthors
+}
