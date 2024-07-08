@@ -36,5 +36,6 @@ __pycache__/
 .env/
 
 Build/
+Output/
 
 .vscode/
