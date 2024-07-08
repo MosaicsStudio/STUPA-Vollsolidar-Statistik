@@ -182,3 +182,31 @@
   % Use the string in the \author command
   \author{\authors}
 }
+
+% Translations
+\newcommand{\translationResult}{}
+
+\DeclareRobustCommand{\ChooseTranslation}[2]{%
+  \ifthenelse{\equal{\lang}{\de}}{
+    #1
+  }{
+    #2
+  }
+}
+
+\DeclareRobustCommand{\SetTranslationKey}[3]{
+  % Localize based on \lang = de or en
+  \ifthenelse{\equal{\lang}{\de}}{
+    \newcommand{#1}{#2}
+  }{
+    \newcommand{#1}{#3}
+  }
+}
+
+\endinput
+
+\ifthenelse{\equal{\lang}{\de}}{
+  \selectlanguage{ngerman}
+}{
+  \selectlanguage{USenglish}
+}

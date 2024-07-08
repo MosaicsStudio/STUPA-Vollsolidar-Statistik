@@ -127,7 +127,7 @@
 \setkomafont{pagenumber}{\color{gray}\blenderfont\selectfont}
 
 \fancyhf{}
-\fancyhead[L]{\color{gray}\blenderfont Survey on the Support of the Deutschlandticket in the Full-Solidarity-Model}
+\fancyhead[L]{\color{gray}\blenderfont \@title}
 \fancyhead[R]{\pagemark}
 
 \setkomafont{disposition}{\sffamily\bfseries}
