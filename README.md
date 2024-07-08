@@ -1,4 +1,7 @@
-# class-summary-base
+# Basisrepo für Zusammenfassungen
+
+Zusammenfassung für eine Vorlesung oder Prüfung an der Fachhochschule Reutlingen.
+
 ## Building
 
 To build the project you can use the following commands:
