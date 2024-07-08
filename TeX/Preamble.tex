@@ -1,12 +1,8 @@
 % !TEX root = ../Main.tex
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ZHAW REPORT CLASS
-% Preamble
-% 
-% Authors:
-% Martin Oswald
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Supress all warnings; Only show errors
+\usepackage{silence}
+\WarningsOff*
 
 %----------------------------------------
 %   REFERENCES
@@ -17,7 +13,7 @@
     style=ieee
 ]{biblatex}
 \usepackage{csquotes}
-\addbibresource{sources.bib}
+\addbibresource{BibTeX/sources.bib}
 \usepackage[nameinlink, noabbrev]{cleveref}
 \usepackage[a4paper, margin=2cm]{geometry}
 
@@ -164,3 +160,25 @@
 
 \usepackage{lipsum}
 \usepackage{setspace}
+\usepackage{lmodern}
+\usepackage{anyfontsize}
+
+% Authors
+% Create a new author array
+\newcommand{\authorsArray}{}
+
+% Define a new command to add an author
+\newcommand{\AddAuthor}[3]{%
+  % #1 = First Name
+  % #2 = Last Name
+  % #3 = ID
+  \appto{\authorsArray}{& #2, #1 / #3 \\}%
+}
+
+% After all authors have been added, create the \author command
+\newcommand{\SetupDocumentAuthors}{%
+  % link authorsArray into a string
+  \edef\authors{\authorsArray}
+  % Use the string in the \author command
+  \author{\authors}
+}

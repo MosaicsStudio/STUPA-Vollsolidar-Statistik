@@ -1,11 +1,16 @@
 % !TEX root = ../../../Main.tex
 
+% Supress all warnings; Only show errors
+\usepackage{silence}
+\WarningsOff*
+
 %----------------------------------------
 %   CLASS DEFINITION AND PARAMETERS
 %----------------------------------------
+% Original: ZHAWReport.cls by Martin Oswald
 \NeedsTeXFormat{LaTeX2e}
-\newcommand{\classname}{zhawreport}
-\ProvidesClass{\classname}[2023/11/13 ZHAW Report]
+\newcommand{\classname}{TeX/Classes/HSRTReport/HSRTReport}
+\ProvidesClass{\classname}[2024/07/08 HSRT Report Class]
 \providecommand{\baseclass}{scrreprt}
 
 % default options
@@ -22,7 +27,6 @@
 %   REQUIRED PACKAGES
 %----------------------------------------
 \RequirePackage[english]{babel}
-\RequirePackage{parskip}
 \RequirePackage{lmodern}
 \RequirePackage{amsmath}
 \RequirePackage{graphicx}
@@ -33,6 +37,7 @@
 \RequirePackage{fancyhdr}
 \RequirePackage{bophook}
 \RequirePackage{ifthen}
+
 
 %----------------------------------------
 %   REFS
@@ -61,6 +66,11 @@
 \newcommand{\footerXShift}{0.7em} % Added the new variable
 
 \def\fontsPath{TeX/Assets/Fonts}
+\def\imagesPath{TeX/Assets/Images}
+\def\classPath{TeX/Classes/HSRTReport}
+
+\def\logoPath{TeX/Assets/Images/HSRT.png}
+\def\skylinePath{TeX/Assets/Images/Skyline.svg}
 
 \newfontfamily\blenderfont[
     Path=\fontsPath/Blender/,
@@ -105,11 +115,11 @@
     \begin{tikzpicture}[overlay, remember picture]
         \node[anchor=south east, inner sep=0pt, xshift=-\footerXShift, yshift=\footerYShift] at (current page.south east) {
             \ifthenelse{\thepage>1}{
-                \includegraphics[width=3.25cm]{TeX/Assets/Images/Stupa.png}
+                \includegraphics[width=3.25cm]{\logoPath}
             }{}
         };
         \node[anchor=south west, inner sep=0pt, yshift=0em] at (current page.south west) {
-            \includesvg[width=1.5\paperwidth]{TeX/Assets/Images/Skyline.svg}
+            \includesvg[width=1.5\paperwidth]{\skylinePath}
         };
     \end{tikzpicture}
 }
@@ -139,4 +149,4 @@
 
 \newcommand{\decoRule}{\rule{.8\textwidth}{.4pt}}
 
-\input{TeX/Classes/HSRTReport/Pages/Titlepage.tex}
+\input{\classPath/Pages/Titlepage.tex}
