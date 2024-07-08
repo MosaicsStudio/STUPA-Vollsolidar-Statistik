@@ -26,6 +26,7 @@
 \usepackage{graphicx}
 % itmize
 \usepackage{enumitem}
+\usepackage{verbatim}
 \setlist[itemize]{leftmargin=*, itemsep=0pt, parsep=0pt}
 
 %----------------------------------------
@@ -166,16 +167,24 @@
 % Create a new author array
 \newcommand{\authorsArray}{}
 
+\DeclareRobustCommand{\matNr}[1]{%
+  \ifx#1\empty
+    % Do nothing
+  \else
+    / #1
+  \fi
+}
+
 % Define a new command to add an author
-\newcommand{\AddAuthor}[3]{%
+\DeclareRobustCommand{\AddAuthor}[3]{%
   % #1 = First Name
   % #2 = Last Name
   % #3 = ID
-  \appto{\authorsArray}{& #2, #1 / #3 \\}%
+  \appto{\authorsArray}{& #2, #1 \matNr{#3} \\}%
 }
 
 % After all authors have been added, create the \author command
-\newcommand{\SetupDocumentAuthors}{%
+\DeclareRobustCommand{\SetupDocumentAuthors}{%
   % link authorsArray into a string
   \edef\authors{\authorsArray}
   % Use the string in the \author command
@@ -185,30 +194,48 @@
 % Translations
 \newcommand{\translationResult}{}
 
-\DeclareRobustCommand{\ChooseTranslation}[2]{%
-  \ifthenelse{\equal{\lang}{\de}}{
+\ExplSyntaxOn
+\cs_new_eq:NN \strcompare \str_if_eq:eeTF
+\ExplSyntaxOff
+
+\DeclareRobustCommand{\ChooseTranslation}[2]{
+  \strcompare{\lang}{\de}{
     #1
   }{
-    #2
+    \strcompare{\lang}{\en}{
+      #2
+    }{
+      \typeout{Error: Unknown language}
+      #2
+    }
   }
 }
 
 \DeclareRobustCommand{\SetTranslationKey}[3]{
   % Localize based on \lang = de or en
-  \ifthenelse{\equal{\lang}{\de}}{
-    \newcommand{#1}{#2}
-  }{
-    \newcommand{#1}{#3}
+  \newcommand{#1}{
+    \ChooseTranslation{#2}{#3}
   }
 }
 
 \endinput
 
+\usepackage{polyglossia}
+
 \ifthenelse{\equal{\lang}{\de}}{
   \selectlanguage{ngerman}
+  \setmainlanguage{ngerman}
+  \PolyglossiaSetup{ngerman}{
+    hyphenmins={2,2},
+    hyphennames={ngerman},
+    hyphenrules={ngerman},
+    hyphenation={ngerman},
+    indentfirst=false
+  }
+
+  % Set KOMA-Script language to ngerman and parskip to none
+  \KOMAoptions{ngerman, parskip=off}
 }{
   \selectlanguage{USenglish}
+  \setmainlanguage{USenglish}
 }
-
-\newcommand{\germanQuote}[1]{„\textit{#1}“}
-\newcommand{\englishQuote}[1]{``\textit{#1}''}

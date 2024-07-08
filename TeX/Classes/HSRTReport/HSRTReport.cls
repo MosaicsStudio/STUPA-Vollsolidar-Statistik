@@ -167,3 +167,10 @@
 \newcommand{\decoRule}{\rule{.8\textwidth}{.4pt}}
 
 \input{\classPath/Pages/Titlepage.tex}
+
+\usepackage{tocloft}
+\renewcommand{\cftpartleader}{\cftdotfill{\cftdotsep}} % for parts
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}} % for chapters
+
+% Set Chapter font size in TOC
+\renewcommand{\cftchapfont}{\sffamily\bfseries\large}

@@ -4,6 +4,8 @@
 
 \providecommand{\lang}{\de}
 
+\def\langToken{\lang}
+
 % Logo type (either STUPA or HSRT)
 \providecommand{\logoType}{HSRT}
 
@@ -11,12 +13,11 @@
 \typeout{Logo Type: \logoType}
 
 \documentclass[
-    11pt,           % font size
-    paper=a4,       % paper size
-    oneside,        % binding layout: oneside, twoside
-    DIV=14,         % influence typearea: 0 - 16
-    onecolumn,      % column layout: twocolumn, onecolumn
-    % draft         % draft mode for editing
+    11pt,
+    paper=a4,
+    oneside,
+    DIV=14,
+    onecolumn
 ]{TeX/Classes/HSRTReport/HSRTReport}
 
 \renewcommand{\baselinestretch}{1.5}
@@ -37,8 +38,8 @@
 \input{TeX/Preamble.tex}
 
 
-\AddAuthor{Frederik}{Beimgraben}{420069}
-\AddAuthor{Luis}{Meyer}{690420}
+\AddAuthor{Frederik}{Beimgraben}{}
+\AddAuthor{Luis}{Meyer}{}
 
 \SetupDocumentAuthors
 
@@ -50,8 +51,9 @@
 
 % ===== Content =====
 
+\input{Content/00_overview.tex}
 \input{Content/01_warnung.tex}
-\input{Content/02_overview.tex}
+\input{Content/02_health_system_overview.tex}
 
 % ===== Bibliography =====
 
