@@ -77,13 +77,17 @@
 
 \def\stupa{STUPA}
 % If \logoType is equal to STUPA, set logo to STUPA logo else set it to HSRT logo
-\ifx\logoType\stupa
+\ifthenelse{\equal{\logoType}{\stupa}}{
     \def\logoPath{TeX/Assets/Images/STUPA.png}
-\else
+}{
     \def\logoPath{TeX/Assets/Images/HSRT.png}
-\fi
+}
+
+\typeout{Logo Path: \logoPath}
 
 \def\skylinePath{TeX/Assets/Images/Skyline.svg}
+
+\typeout{Skyline Path: \skylinePath}
 
 \newfontfamily\blenderfont[
     Path=\fontsPath/Blender/,
