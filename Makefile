@@ -26,12 +26,25 @@ all: compile
 	xdg-open $(GERMAN_PDF_TARGET)
 	xdg-open $(ENGLISH_PDF_TARGET)
 
-compile: german english
+requirements: 
+ifeq ($(shell uname -s),Linux)
+ifeq ($(shell cat /etc/*-release | grep -o "Ubuntu"),Ubuntu)
+	if [ -z "$(shell dpkg -l | grep texlive-full)" ]; then sudo apt-get install texlive-full; fi
+	if [ -z "$(shell dpkg -l | grep latexmk)" ]; then sudo apt-get install latexmk; fi
+	if [ -z "$(shell dpkg -l | grep biber)" ]; then sudo apt-get install biber; fi
+else
+	$(warning "Please install the required packages: texlive-full, latexmk, biber, xdg-utils")
+endif
+else
+	$(error "This Makefile is only for Linux")
+endif
+
+compile: requirements german english
 
 clean:
 	git clean -dfX
 
-german:
+german: requirements
 # If not Exists, create 'Build' directory
 	[ -d $(GERMAN_BUILD_DIR) ] || mkdir -p $(GERMAN_BUILD_DIR)
 # If STUPA is set to 1, set pretex as `-pretex="\newcommand{\logoType}{STUPA}\newcommand{\lang}{de}"`
@@ -47,7 +60,7 @@ endif
 # Copy the PDF to the 'Output/German' directory
 	cp $(GERMAN_PDF_SOURCE) $(GERMAN_PDF_TARGET)
 
-english:
+english: requirements
 # If not Exists, create 'Build' directory
 	[ -d $(ENGLISH_BUILD_DIR) ] || mkdir -p $(ENGLISH_BUILD_DIR)
 # If STUPA is set to 1, set pretex as `-pretex="\newcommand{\logoType}{STUPA}\newcommand{\lang}{en}"`
