@@ -48,7 +48,7 @@ ifeq ($(STUPA), 1)
 	echo "Using STUPA Logo"
 	$(LATEX) $(LATEX_FLAGS) -output-directory=$(GERMAN_BUILD_DIR) -pretex="\newcommand{\logoType}{STUPA}\newcommand{\lang}{de}" -usepretex $(SOURCE)
 else
-	$(LATEX) $(LATEX_FLAGS) -output-directory=$(GERMAN_BUILD_DIR) -pretex="\newcommand{\lang}{de}" -usepretex $(SOURCE)
+	$(LATEX) $(LATEX_FLAGS) -output-directory=$(GERMAN_BUILD_DIR) -pretex="\newcommand{\langType}{de}" -usepretex $(SOURCE)
 endif
 # If not Exists, create 'Output/German' directory
 	[ -d $(GERMAN_OUT_DIR) ] || mkdir -p $(GERMAN_OUT_DIR)
@@ -64,7 +64,7 @@ ifeq ($(STUPA), 1)
 	echo "Using STUPA Logo"
 	$(LATEX) $(LATEX_FLAGS) -output-directory=$(ENGLISH_BUILD_DIR) -pretex="\newcommand{\logoType}{STUPA}\newcommand{\lang}{en}" -usepretex $(SOURCE)
 else
-	$(LATEX) $(LATEX_FLAGS) -output-directory=$(ENGLISH_BUILD_DIR) -pretex="\newcommand{\lang}{en}" -usepretex $(SOURCE)
+	$(LATEX) $(LATEX_FLAGS) -output-directory=$(ENGLISH_BUILD_DIR) -pretex="\newcommand{\langType}{en}" -usepretex $(SOURCE)
 endif
 # If not Exists, create 'Output/English' directory
 	[ -d $(ENGLISH_OUT_DIR) ] || mkdir -p $(ENGLISH_OUT_DIR)
