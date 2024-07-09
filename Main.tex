@@ -1,46 +1,17 @@
-% Language Definitions
-\def\de{de}
-\def\en{en}
-
-\providecommand{\lang}{\de}
-
-% Logo type (either STUPA or HSRT)
-\providecommand{\logoType}{HSRT}
-
-\typeout{Language: \lang}
-\typeout{Logo Type: \logoType}
+% Setup CLI Parameters
+\input{TeX/Parameters}
+\input{TeX/StrCompare}
 
 \documentclass[
-    11pt,           % font size
-    paper=a4,       % paper size
-    oneside,        % binding layout: oneside, twoside
-    DIV=14,         % influence typearea: 0 - 16
-    onecolumn,      % column layout: twocolumn, onecolumn
-    % draft         % draft mode for editing
+    11pt,
+    paper=a4,
+    oneside,
+    DIV=14,
+    onecolumn
 ]{TeX/Classes/HSRTReport/HSRTReport}
 
-\renewcommand{\baselinestretch}{1.5}
-
-\title{\ChooseTranslation{
-    Zusammenfassung Standards und Prozesse
-}{
-    Summary Standards and Processes
-}}
-\createdon{02.04.2024}
-
-\newcommand{\className}{\ChooseTranslation{
-    Beispielkurs
-}{
-    Example Course
-}}
-
-\input{TeX/Preamble.tex}
-
-
-\AddAuthor{Frederik}{Beimgraben}{}
-\AddAuthor{Luis}{Meyer}{}
-
-\SetupDocumentAuthors
+\input{TeX/Common}
+\input{TeX/Report}
 
 \begin{document}
 
@@ -50,7 +21,8 @@
 
 % ===== Content =====
 
-\input{Content/00_demo.tex}
+\input{Content/00_overview.tex}
+\input{Content/01_warnung.tex}
 
 % ===== Bibliography =====
 
