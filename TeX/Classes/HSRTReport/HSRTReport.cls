@@ -155,10 +155,12 @@
         \node[anchor=east, xshift=-0.1cm] (logo#4) at (logo#5.west) {
             \setlength{\imageHeight}{1.5cm*\real{#2}*\real{0.55}*\real{\logosScale}}
             \StrBehind{#1}{.}[\fileExtension]
-            \strcompare{\fileExtension}{svg}{
-                \includesvg[height=\imageHeight]{#1}
-            }{
-                \includegraphics[height=\imageHeight]{#1}
+            \strcompare{\thepage}{1}{}{
+                \strcompare{\fileExtension}{svg}{
+                    \includesvg[height=\imageHeight]{#1}
+                }{
+                    \includegraphics[height=\imageHeight]{#1}
+                }
             }
         };
         \filldraw[white, opacity=#3] (logo#4.north east) rectangle (logo#4.south west);
