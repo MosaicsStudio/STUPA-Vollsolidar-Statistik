@@ -125,72 +125,52 @@
 % ==== Add more logos to be placed besides the main logo on the title page ====
 \newcommand{\titlePageLogosArray}{}
 \newcommand{\footerLogosArray}{}
-\newcommand{\shadesArray}{}
 \newcommand{\logosScale}{1}
 \newcommand{\mainLogoScale}{1}
 
 \newlength{\imageHeight}
 
-\newcommand{\lastToken}{mainLogo}
+\newcounter{logoCounter}
+\setcounter{logoCounter}{1}
 
 \DeclareRobustCommand{\SetLogosScale}[1]{
     \renewcommand{\logosScale}{#1}
 }
 
-\DeclareRobustCommand{\AddMask}[2]{
-    \appto{\shadesArray}{
-        \filldraw[white, opacity=#2] (#1.north east) rectangle (#1.south west);
-    }
-}
-
-\DeclareRobustCommand{\AddLogo}[3]{
-    \edef\currentTokenEval{\lastToken Next}
-    \edef\lastTokenEval{\lastToken}
-
-    % Get File-Ending
-    \StrBehind{#1}{.}[\fileEnding]
-
+\DeclareRobustCommand{\AddLogo}[5]{
     \appto{\titlePageLogosArray}{
-        \node[anchor=west, xshift=0.5cm] (\currentTokenEval) at (\lastTokenEval.east) {
+        \node[anchor=west, xshift=0.5cm] (logo#4) at (logo#5.east) {
             \setlength{\imageHeight}{1.5cm*\real{#2}*\real{\logosScale}}
-            \strcompare{\fileEnding}{svg}{
+            \StrBehind{#1}{.}[\fileExtension]
+            \strcompare{\fileExtension}{svg}{
                 \includesvg[height=\imageHeight]{#1}
             }{
                 \includegraphics[height=\imageHeight]{#1}
             }
         };
+        \filldraw[white, opacity=#3] (logo#4.north east) rectangle (logo#4.south west);
     }
 
     \appto{\footerLogosArray}{
-        \node[anchor=east, xshift=-0.1cm] (\currentTokenEval) at (\lastTokenEval.west) {
-            \strcompare{\thepage}{1}{}{
-                \setlength{\imageHeight}{1.5cm*\real{#2}*\real{0.55}*\real{\logosScale}}
-                \strcompare{\fileEnding}{svg}{
-                    \includesvg[height=\imageHeight]{#1}
-                }{
-                    \includegraphics[height=\imageHeight]{#1}
-                }
+        \node[anchor=east, xshift=-0.1cm] (logo#4) at (logo#5.west) {
+            \setlength{\imageHeight}{1.5cm*\real{#2}*\real{0.55}*\real{\logosScale}}
+            \StrBehind{#1}{.}[\fileExtension]
+            \strcompare{\fileExtension}{svg}{
+                \includesvg[height=\imageHeight]{#1}
+            }{
+                \includegraphics[height=\imageHeight]{#1}
             }
         };
+        \filldraw[white, opacity=#3] (logo#4.north east) rectangle (logo#4.south west);
     }
-
-    \ifx#3\empty
-        \edef\shadeOpacity{0}
-    \else
-        \edef\shadeOpacity{#3}
-    \fi
-
-    \AddMask{\currentTokenEval}{\shadeOpacity}
-
-    \renewcommand{\lastToken}{\currentTokenEval}
 }
 
 \DeclareRobustCommand{\SetupTitlePageLogos}{
-    \titlePageLogosArray\shadesArray
+    \titlePageLogosArray
 }
 
 \DeclareRobustCommand{\SetupFooterLogos}{
-    \footerLogosArray\shadesArray
+    \footerLogosArray
 }
 % =============================================================================
 \def\skylinePath{TeX/Assets/Images/Skyline.svg}
@@ -202,7 +182,7 @@
 \AtBeginPage{
     \setlength{\imageHeight}{2cm*\real{\mainLogoScale}*\real{\logosScale}*\real{0.45}}
     \begin{tikzpicture}[overlay, remember picture]
-        \node[anchor=south east, inner sep=0pt, xshift=-\footerXShift, yshift=\footerYShift] (mainLogo) at (current page.south east) {
+        \node[anchor=south east, inner sep=0pt, xshift=-\footerXShift, yshift=\footerYShift] (logo0) at (current page.south east) {
             \strcompare{\thepage}{1}{}{
                 \includesvg[height=\imageHeight]{\imagesPath/DUMMY_FOOT.svg}
             }
@@ -211,7 +191,7 @@
         \node[anchor=south west, inner sep=0pt, yshift=0em] at (current page.south west) {
             \includesvg[width=1.5\paperwidth]{\skylinePath}
         };
-        \filldraw[white] (mainLogo.north east) rectangle (mainLogo.south west);
+        \filldraw[white] (logo0.north east) rectangle (logo0.south west);
     \end{tikzpicture}
 }
 
