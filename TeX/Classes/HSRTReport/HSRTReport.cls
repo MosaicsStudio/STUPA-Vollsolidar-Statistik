@@ -126,63 +126,98 @@
 %----------------------------------------
 
 % ==== Add more logos to be placed besides the main logo on the title page ====
-\newcommand{\logosArray}{}
+\newcommand{\titlePageLogosArray}{}
+\newcommand{\footerLogosArray}{}
+\newcommand{\shadesArray}{}
+\newcommand{\logosScale}{1}
+\newcommand{\mainLogoScale}{1}
 
 \newcommand{\lastToken}{mainLogo}
 
-\DeclareRobustCommand{\AddLogo}[3]{
-    \ifx#2\empty
-        \edef\imgHeight{2cm}
-    \else
-        \edef\imgHeight{#2}
-    \fi
+\DeclareRobustCommand{\SetLogosScale}[1]{
+    \renewcommand{\logosScale}{#1}
+}
 
+\DeclareRobustCommand{\AddLogo}[3]{
     \edef\currentTokenEval{\lastToken Next}
     \edef\lastTokenEval{\lastToken}
 
-    \appto{\logosArray}{
-        \node[anchor=west] (\currentTokenEval) at (\lastTokenEval.east) {
-            \includegraphics[height=\imgHeight]{#1}
+    \appto{\titlePageLogosArray}{
+        \node[anchor=west, xshift=0.5cm] (\currentTokenEval) at (\lastTokenEval.east) {
+            \includegraphics[height=2cm*\real{#2}*\real{\logosScale}]{#1}
         };
-        \ifx#3\empty
-            % Do nothing
-        \else % Add a white mask on top to adjust opacity
-            \filldraw[white, opacity=#3] (\lastToken.north east) rectangle (\currentTokenEval.south west);
-        \fi
+    }
+
+    \appto{\footerLogosArray}{
+        \node[anchor=east, xshift=-0.1cm] (\currentTokenEval) at (\lastTokenEval.west) {
+            \strcompare{\thepage}{1}{}{
+                \includegraphics[height=2cm*\real{#2}*\real{0.65}*\real{\logosScale}]{#1}
+            }
+        };
+    }
+
+    \ifx#3\empty
+        \edef\shadeOpacity{0}
+    \else
+        \edef\shadeOpacity{#3}
+    \fi
+
+    \appto{\shadesArray}{
+        \filldraw[white, opacity=\shadeOpacity] (\currentTokenEval.north east) rectangle (\currentTokenEval.south west);
     }
 
     \renewcommand{\lastToken}{\currentTokenEval}
 }
 
-\DeclareRobustCommand{\SetupDocumentLogos}{
-    \logosArray
+\DeclareRobustCommand{\AddMask}[2]{
+    \appto{\shadesArray}{
+        \filldraw[white, opacity=#2] (#1.north east) rectangle (#1.south west);
+    }
+}
+
+\DeclareRobustCommand{\ShadeMainLogo}[1]{
+    \AddMask{mainLogo}{#1}
+}
+
+\DeclareRobustCommand{\SetupTitlePageLogos}{
+    \titlePageLogosArray\shadesArray
+}
+
+\DeclareRobustCommand{\SetupFooterLogos}{
+    \footerLogosArray\shadesArray
 }
 % =============================================================================
 
-
 \def\stupa{STUPA}
-% If \logoType is equal to STUPA, set logo to STUPA logo else set it to HSRT logo
-\ifthenelse{\equal{\logoType}{\stupa}}{
-    \def\logoPath{TeX/Assets/Images/STUPA.png}
-}{
-    \def\logoPath{TeX/Assets/Images/HSRT.png}
+
+\providecommand{\mainLogo}{\strcompare{\logoType}{\stupa}{STUPA.png}{HSRT.png}}
+
+\DeclareRobustCommand{\SetMainLogo}[2]{
+    \renewcommand{\mainLogo}{#1}
+
+    \ifx#2\empty
+        \renewcommand{\mainLogoScale}{1}
+    \else
+        \renewcommand{\mainLogoScale}{#2}
+    \fi
 }
 
-\typeout{Logo Path: \logoPath}
+% If \logoType is equal to STUPA, set logo to STUPA logo else set it to HSRT logo
+\newcommand{\logoPath}{
+    \imagesPath/\mainLogo
+}
 
 \def\skylinePath{TeX/Assets/Images/Skyline.svg}
-
-\typeout{Skyline Path: \skylinePath}
-
 
 % Define the logo and its position
 \AtBeginPage{
     \begin{tikzpicture}[overlay, remember picture]
-        \node[anchor=south east, inner sep=0pt, xshift=-\footerXShift, yshift=\footerYShift] at (current page.south east) {
-            \ifthenelse{\thepage>1}{
-                \includegraphics[width=3.25cm]{\logoPath}
-            }{}
+        \node[anchor=south east, inner sep=0pt, xshift=-\footerXShift, yshift=\footerYShift] (mainLogo) at (current page.south east) {
+            \strcompare{\thepage}{1}{}{
+                \includegraphics[height=2cm*\real{\mainLogoScale}*\real{0.65}*\real{\logosScale}]{\logoPath}
+            }
         };
+        \SetupFooterLogos
         \node[anchor=south west, inner sep=0pt, yshift=0em] at (current page.south west) {
             \includesvg[width=1.5\paperwidth]{\skylinePath}
         };
@@ -197,7 +232,16 @@
 \fancyhf{}
 \fancyhead[L]{\color{gray}\blenderfont \@title}
 \fancyhead[R]{\pagemark}
+\fancyfoot[C]{}
 
+\fancypagestyle{fancy}{
+    \fancyhf{}
+    \fancyhead[L]{\color{gray}\blenderfont \@title}
+    \fancyhead[R]{\pagemark}
+    \fancyfoot[C]{}
+}
+
+% Set font for all headings
 \setkomafont{disposition}{\sffamily\bfseries}
 \setkomafont{chapter}{\Large\sffamily\bfseries}
 \setkomafont{section}{\Large\sffamily\bfseries}
@@ -222,9 +266,9 @@
 %----------------------------------------
 %   TABLE OF CONTENTS
 %----------------------------------------
-\usepackage{tocloft}
-\renewcommand{\cftpartleader}{\cftdotfill{\cftdotsep}} % for parts
-\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}} % for chapters
+%\usepackage{tocloft}
+%\renewcommand{\cftpartleader}{\cftdotfill{\cftdotsep}} % for parts
+%\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}} % for chapters
 
 % Set Chapter font size in TOC
-\renewcommand{\cftchapfont}{\sffamily\bfseries\large}
+%\renewcommand{\cftchapfont}{\sffamily\bfseries\large}
