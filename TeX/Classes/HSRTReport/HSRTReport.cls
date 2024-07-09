@@ -75,9 +75,6 @@
 \renewcommand*\rmdefault{lmr}
 \renewcommand*\sfdefault{lmss}
 
-\newcommand{\footerYShift}{0.4em}
-\newcommand{\footerXShift}{0.7em}
-
 \newfontfamily\blenderfont[
     Path=\fontsPath/Blender/,
     Extension=.ttf,
@@ -132,26 +129,47 @@
 \newcommand{\logosScale}{1}
 \newcommand{\mainLogoScale}{1}
 
+\newlength{\imageHeight}
+
 \newcommand{\lastToken}{mainLogo}
 
 \DeclareRobustCommand{\SetLogosScale}[1]{
     \renewcommand{\logosScale}{#1}
 }
 
+\DeclareRobustCommand{\AddMask}[2]{
+    \appto{\shadesArray}{
+        \filldraw[white, opacity=#2] (#1.north east) rectangle (#1.south west);
+    }
+}
+
 \DeclareRobustCommand{\AddLogo}[3]{
     \edef\currentTokenEval{\lastToken Next}
     \edef\lastTokenEval{\lastToken}
 
+    % Get File-Ending
+    \StrBehind{#1}{.}[\fileEnding]
+
     \appto{\titlePageLogosArray}{
         \node[anchor=west, xshift=0.5cm] (\currentTokenEval) at (\lastTokenEval.east) {
-            \includegraphics[height=2cm*\real{#2}*\real{\logosScale}]{#1}
+            \setlength{\imageHeight}{1.5cm*\real{#2}*\real{\logosScale}}
+            \strcompare{\fileEnding}{svg}{
+                \includesvg[height=\imageHeight]{#1}
+            }{
+                \includegraphics[height=\imageHeight]{#1}
+            }
         };
     }
 
     \appto{\footerLogosArray}{
         \node[anchor=east, xshift=-0.1cm] (\currentTokenEval) at (\lastTokenEval.west) {
             \strcompare{\thepage}{1}{}{
-                \includegraphics[height=2cm*\real{#2}*\real{0.65}*\real{\logosScale}]{#1}
+                \setlength{\imageHeight}{1.5cm*\real{#2}*\real{0.55}*\real{\logosScale}}
+                \strcompare{\fileEnding}{svg}{
+                    \includesvg[height=\imageHeight]{#1}
+                }{
+                    \includegraphics[height=\imageHeight]{#1}
+                }
             }
         };
     }
@@ -162,21 +180,9 @@
         \edef\shadeOpacity{#3}
     \fi
 
-    \appto{\shadesArray}{
-        \filldraw[white, opacity=\shadeOpacity] (\currentTokenEval.north east) rectangle (\currentTokenEval.south west);
-    }
+    \AddMask{\currentTokenEval}{\shadeOpacity}
 
     \renewcommand{\lastToken}{\currentTokenEval}
-}
-
-\DeclareRobustCommand{\AddMask}[2]{
-    \appto{\shadesArray}{
-        \filldraw[white, opacity=#2] (#1.north east) rectangle (#1.south west);
-    }
-}
-
-\DeclareRobustCommand{\ShadeMainLogo}[1]{
-    \AddMask{mainLogo}{#1}
 }
 
 \DeclareRobustCommand{\SetupTitlePageLogos}{
@@ -187,40 +193,25 @@
     \footerLogosArray\shadesArray
 }
 % =============================================================================
-
-\def\stupa{STUPA}
-
-\providecommand{\mainLogo}{\strcompare{\logoType}{\stupa}{STUPA.png}{HSRT.png}}
-
-\DeclareRobustCommand{\SetMainLogo}[2]{
-    \renewcommand{\mainLogo}{#1}
-
-    \ifx#2\empty
-        \renewcommand{\mainLogoScale}{1}
-    \else
-        \renewcommand{\mainLogoScale}{#2}
-    \fi
-}
-
-% If \logoType is equal to STUPA, set logo to STUPA logo else set it to HSRT logo
-\newcommand{\logoPath}{
-    \imagesPath/\mainLogo
-}
-
 \def\skylinePath{TeX/Assets/Images/Skyline.svg}
+
+\newcommand{\footerYShift}{0.7em}
+\newcommand{\footerXShift}{0.7em}
 
 % Define the logo and its position
 \AtBeginPage{
+    \setlength{\imageHeight}{2cm*\real{\mainLogoScale}*\real{\logosScale}*\real{0.45}}
     \begin{tikzpicture}[overlay, remember picture]
         \node[anchor=south east, inner sep=0pt, xshift=-\footerXShift, yshift=\footerYShift] (mainLogo) at (current page.south east) {
             \strcompare{\thepage}{1}{}{
-                \includegraphics[height=2cm*\real{\mainLogoScale}*\real{0.65}*\real{\logosScale}]{\logoPath}
+                \includesvg[height=\imageHeight]{\imagesPath/DUMMY_FOOT.svg}
             }
         };
         \SetupFooterLogos
         \node[anchor=south west, inner sep=0pt, yshift=0em] at (current page.south west) {
             \includesvg[width=1.5\paperwidth]{\skylinePath}
         };
+        \filldraw[white] (mainLogo.north east) rectangle (mainLogo.south west);
     \end{tikzpicture}
 }
 
