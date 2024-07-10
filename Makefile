@@ -19,6 +19,9 @@ ENGLISH_PDF_SOURCE=$(ENGLISH_BUILD_DIR)/$(PDF)
 GERMAN_PDF_TARGET=$(GERMAN_OUT_DIR)/$(PDF)
 ENGLISH_PDF_TARGET=$(ENGLISH_OUT_DIR)/$(PDF)
 
+PYTHON=python3
+EVALUATE=evaluate.py
+
 # Flag to use STUPA-Logo instead of the default one
 STUPA?=0
 
@@ -39,7 +42,10 @@ compile: german english
 clean:
 	git clean -dfX
 
-german:
+evaluation:
+	$(PYTHON) $(EVALUATE)
+
+german: evaluation
 # If not Exists, create 'Build' directory
 	[ -d $(GERMAN_BUILD_DIR) ] || mkdir -p $(GERMAN_BUILD_DIR)
 # If STUPA is set to 1, set pretex as `-pretex="\newcommand{\logoType}{STUPA}\newcommand{\lang}{de}"`
@@ -55,7 +61,7 @@ endif
 # Copy the PDF to the 'Output/German' directory
 	cp $(GERMAN_PDF_SOURCE) $(GERMAN_PDF_TARGET)
 
-english:
+english: evaluation
 # If not Exists, create 'Build' directory
 	[ -d $(ENGLISH_BUILD_DIR) ] || mkdir -p $(ENGLISH_BUILD_DIR)
 # If STUPA is set to 1, set pretex as `-pretex="\newcommand{\logoType}{STUPA}\newcommand{\lang}{en}"`
