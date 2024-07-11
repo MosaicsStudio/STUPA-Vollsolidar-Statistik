@@ -314,7 +314,7 @@ class Question:
         )
     
     def answered(self, df: DataFrame) -> DataFrame:
-        return df[df[self.code].notnull()]
+        return df[df[self.code].notnull() & (df[self.code] != '')]
     
     def of_answer(self, df: DataFrame, answer: str | int | List[str | int]) -> DataFrame:
         if isinstance(answer, int):
@@ -451,4 +451,15 @@ class Question:
 
         self.make_numeric(df)
 
-        df[self.code].plot.hist(bins=bins, title=self.text, ax=fig.gca(), **kwargs)
+        ax = fig.gca()
+
+        # Add mean and median lines
+        mean = df[self.code].mean()
+        median = df[self.code].median()
+
+        ax.axvline(mean, color='r', linestyle='dashed', linewidth=1)
+        ax.axvline(median, color='g', linestyle='dashed', linewidth=1)
+
+        ax.legend([f'Mean: {mean:.2f}', f'Median: {median:.2f}'])
+
+        df[self.code].plot.hist(bins=bins, title=self.text, ax=ax, **kwargs)

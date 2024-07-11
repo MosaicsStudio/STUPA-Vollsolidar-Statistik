@@ -134,7 +134,11 @@ with SaveFig('AmountReasonable', 'Is the proposed amount reasonable?') as fig:
 
 # Amounts considered reasonable by the students
 with SaveFig('AmountsConsideredReasonable', 'Amounts considered reasonable by the students') as fig:
-    G06Q02.histogram(G06Q02.answered(DF_FILTERED), fig=fig, bins=20, color=MAIN_COLOR_PALETTE[1])
+    G06Q02.histogram(G06Q02.answered(DF_FILTERED), fig=fig, bins=20, color=MAIN_COLOR_PALETTE[0])
+
+# Fairness (Pie)
+with SaveFig('Fairness', 'Is the proposed model fair?') as fig:
+    G06Q03.pie_plot(G06Q03.answered(DF_FILTERED), fig=fig, colors=MAIN_COLOR_PALETTE)
 
 # ========================
 # Misc.
@@ -189,4 +193,24 @@ with open('Build/TeX/ParticipationText.tex', 'w') as f:
 We initiated a total of {DF.shape[0]} surveys, out of which {DF_COMPLETED.shape[0]} were fully completed.
 This resulted in data from {DF_FILTERED.shape[0]} students, corresponding to around {(DF_FILTERED.shape[0] / STUDENTS_TOTAL) * 100:.0f}\% of the total student population on the main campus (approximately {STUDENTS_TOTAL} students).
 Since this survey focuses on students, all subsequent graphs will exclusively use data from the student group.
+""")
+    
+# Reasonable Amounts
+G06Q02.make_numeric(DF_FILTERED)
+
+BETWEEN_0_8 = DF_FILTERED[G06Q02.code].between(0, 8).sum()
+BETWEEN_96_104 = DF_FILTERED[G06Q02.code].between(96, 104).sum()
+
+with open('Build/TeX/AmountsConsideredReasonable.tex', 'w') as f:
+    f.write(f"""% TEX root = ../../Main.tex
+Since the pricing structure is of particular interest, participants who disagreed with G06Q1 (30\\%, \\ref{{fig:AmountReasonable}}) were given the option to propose their own pricing.
+\\ref{{fig:AmountsConsideredReasonable}} visualizes these suggested price points, grouped by bins of 8 Euros. Interestingly, the most frequently suggested price points were 0 Euros and 100 Euros, with {BETWEEN_0_8} participants selecting the 0-8 Euro range and {BETWEEN_96_104} participants selecting the 96-104 Euro range. This may indicate that 
+""")
+    
+# Fairness
+VERY_UNFAIR = DF_FILTERED[G06Q03.code].value_counts(normalize=True).get('AO01', 0) * 100
+
+with open('Build/TeX/Fairness.tex', 'w') as f:
+    f.write(f"""% TEX root = ../../Main.tex
+Interestingly whilst 70\\% of participants thought the amount was appropriate and around 80\% supported the \\gls{{dt}} in the \\gls{{fsm}} more than half of all participants answering this question thought the concept was unfair with {VERY_UNFAIR:.0f}\\% deeming it very unfair.
 """)
