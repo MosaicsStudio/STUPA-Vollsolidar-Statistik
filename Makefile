@@ -19,8 +19,12 @@ ENGLISH_PDF_SOURCE=$(ENGLISH_BUILD_DIR)/$(PDF)
 GERMAN_PDF_TARGET=$(GERMAN_OUT_DIR)/$(PDF)
 ENGLISH_PDF_TARGET=$(ENGLISH_OUT_DIR)/$(PDF)
 
-PYTHON=python3
 EVALUATE=evaluate.py
+
+# Choose venv folder; Check for .env, .venv, venv, env; If not found, use '.env'
+VENV?=$(shell [ -d ".env" ] && echo ".env" || echo $(shell [ -d ".venv" ] && echo ".venv" || echo $(shell [ -d "venv" ] && echo "venv" || echo $(shell [ -d "env" ] && echo "env" || echo ".env"))))
+
+PYTHON=$(VENV)/bin/python3
 
 # Flag to use STUPA-Logo instead of the default one
 STUPA?=0
@@ -28,6 +32,12 @@ STUPA?=0
 all: compile
 	xdg-open $(GERMAN_PDF_TARGET)
 	xdg-open $(ENGLISH_PDF_TARGET)
+
+venv:
+ifeq ($(shell [ -d "$(VENV)" ] && echo 1 || echo 0), 0)
+	python3 -m venv $(VENV)
+	source $(VENV)/bin/activate && pip install -r requirements.txt
+endif
 
 install-dependencies:
 	if [ -z "$(shell dpkg -l | grep texlive-full)" ]; then sudo apt-get install texlive-full; fi
@@ -42,7 +52,8 @@ compile: german english
 clean:
 	git clean -dfX
 
-evaluation:
+evaluation: venv
+	@echo "Using Python from $(PYTHON)"
 	$(PYTHON) $(EVALUATE)
 
 german: evaluation

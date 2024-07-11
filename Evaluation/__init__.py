@@ -37,6 +37,12 @@ DF = G01Q01.of_answer(DF, 'AO01')
 # Filter out all incomplete responses (G03Q01 is not None)
 DF = G03Q01.answered(DF)
 
+# Filter out all participants that didn´t spend at least 5s on the G03 page
+DF = G03.time.filter_numeric(
+    DF,
+    lambda x: x >= 5
+)
+
 print(f'Filtered DF with shape: {DF.shape}')
 
 # ========================
@@ -110,5 +116,6 @@ with SaveFig('DistanceVsTime') as fig:
         fig=fig,
         category=G04Q01,
         x_log=True,
-        colors=MAIN_COLOR_PALETTE
+        colors=MAIN_COLOR_PALETTE,
+        show_regression=True
     )

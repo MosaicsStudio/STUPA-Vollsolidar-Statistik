@@ -4,12 +4,14 @@
 Questions for the evaluation of the questionnaire
 """
 
-from .question import Question, QuestionType
+from .question import Question, QuestionType, Page
+
+G01 = Page('G01', 'General Information', [])
 
 # Category (Student, Employee, Professor, External)
 G01Q01 = Question(
     'G01Q01',
-    'Category',
+    'Which category do you belong to?',
     {
         'AO01': 'Student',
         'AO02': 'Employee',
@@ -22,7 +24,7 @@ G01Q01 = Question(
 # Faculty (INF, LS, ESB, TEC, TEX, other)
 G01Q02 = Question(
     'G01Q02',
-    'Faculty',
+    'Which faculty do you belong to?',
     {
         'AO01': 'INF',
         'AO02': 'LS',
@@ -37,7 +39,7 @@ G01Q02 = Question(
 # Exchange-Program (Yes, No)
 G01Q03 = Question(
     'G01Q03',
-    'Exchange-Program',
+    'Are you part of an Exchange Program?',
     {
         'Y': 'Yes',
         'N': 'No'
@@ -48,7 +50,7 @@ G01Q03 = Question(
 # Older than 26 (Yes, No)
 G01Q04 = Question(
     'G01Q04',
-    'Older than 26',
+    'Are you older than 26?',
     {
         'Y': 'Yes',
         'N': 'No'
@@ -56,10 +58,12 @@ G01Q04 = Question(
     QuestionType.OPTIONS
 )
 
+G02 = Page('G02', 'Knowledge', [])
+
 # Knowledge of Deutschlandticket (Very bad to Very good; 4 Options)
 G02Q01 = Question(
     'G02Q01',
-    'Knowledge of Deutschlandticket',
+    'How well do you know the Deutschlandticket?',
     {
         'AO01': 'Very bad',
         'AO02': 'Bad',
@@ -72,7 +76,7 @@ G02Q01 = Question(
 # Knowledge of Vollsolidarmodell (Very bad to Very good; 4 Options)
 G02Q02 = Question(
     'G02Q02',
-    'Knowledge of Vollsolidarmodell',
+    'How well do you know the Vollsolidarmodell?',
     {
         'AO01': 'Very bad',
         'AO02': 'Bad',
@@ -82,10 +86,12 @@ G02Q02 = Question(
     QuestionType.OPTIONS
 )
 
+G03 = Page('G03', 'Opinion/Infotext', [])
+
 # Your informed stance on the Deutschlandticket in the full solidarity model (Very opposed to Very supportive; 4 Options)
 G03Q01 = Question(
     'G03Q01',
-    'Informed opinion on Deutschlandticket',
+    'What is your opinion on the proposed model?',
     {
         'AO01': 'Strongly opposed',
         'AO02': 'Opposed',
@@ -95,10 +101,12 @@ G03Q01 = Question(
     QuestionType.OPTIONS
 )
 
+G04 = Page('G04', 'Transportation', [])
+
 # Primary mode of transportation (Car, By foot, Public transportation, Bicycle, Carpooled)
 G04Q01 = Question(
     'G04Q01',
-    'Primary mode of transportation',
+    'What is your primary mode of transportation?',
     {
         'AO01': 'Car',
         'AO02': 'By foot',
@@ -113,7 +121,7 @@ G04Q01 = Question(
 # Frequency of using public transportation to get to university (Never to Always; 5 Options)
 G04Q02 = Question(
     'G04Q02',
-    'Frequency of using public transportation to get to university',
+    'How often do you use public transportation to get to university?',
     {
         'AO01': 'Never',
         'AO02': 'Fewer than once a week',
@@ -127,7 +135,7 @@ G04Q02 = Question(
 # Frequency of using public transportation otherwise (Never to Always; 5 Options)
 G04Q03 = Question(
     'G04Q03',
-    'Frequency of using public transportation otherwise',
+    'How often do you use public transportation otherwise?',
     {
         'AO01': 'Never',
         'AO02': 'Fewer than once a week',
@@ -141,7 +149,7 @@ G04Q03 = Question(
 # Amount of money spent on transportation per month (0 to 100+; 5 Options)
 G04Q04 = Question(
     'G04Q04[SQ001]',
-    'Amount of money spent on transportation per month',
+    'How much money do you spend on transportation per month?',
     {},
     QuestionType.NUMBER
 )
@@ -149,7 +157,7 @@ G04Q04 = Question(
 # Distance between home and university (0 to 100+; 5 Options)
 G04Q05 = Question(
     'G04Q05[SQ001]',
-    'Distance between home and university',
+    'What is the distance between your home and university?',
     {},
     QuestionType.NUMBER
 )
@@ -157,7 +165,7 @@ G04Q05 = Question(
 # Time from home to university (0 to 360+; 5 Options)
 G04Q06 = Question(
     'G04Q06[SQ001]',
-    'Time from home to university',
+    'How much time do you spend traveling from home to university?',
     {},
     QuestionType.NUMBER
 )
@@ -176,6 +184,8 @@ G04Q07 = Question(
     QuestionType.OPTIONS
 )
 
+G05 = Page('G05', 'Climate Friendliness', [])
+
 # How important is the climate friendliness of your mode of transportation to you? (Not important to Very important; 4 Options)
 G05Q01 = Question(
     'G05Q01',
@@ -189,10 +199,12 @@ G05Q01 = Question(
     QuestionType.OPTIONS
 )
 
+G06 = Page('G06', 'Opinion Reasonable/Fairness', [])
+
 # Stance on the named conditions for the full solidarity model: Amount justified?
 G06Q01 = Question(
     'G06Q01',
-    'Is the Amount reasonable?',
+    'Do you think the amount is reasonable?',
     {
         'Y': 'Yes',
         'N': 'No'
@@ -203,7 +215,7 @@ G06Q01 = Question(
 # Stance on the named conditions for the full solidarity model: What amount is justified?
 G06Q02 = Question(
     'G06Q02[SQ001]',
-    'Justified amount for the full solidarity model',
+    'What amount do you think is justified for the full solidarity model?',
     {},
     QuestionType.NUMBER
 )
@@ -211,7 +223,7 @@ G06Q02 = Question(
 # Stance on the named conditions for the full solidarity model: Fairness (Very unfair to Very fair; 4 Options)
 G06Q03 = Question(
     'G06Q03',
-    'Stance on the fairness of the full solidarity model',
+    'What is your stance on the fairness of the full solidarity model?',
     {
         'AO01': 'Very unfair',
         'AO02': 'Unfair',
@@ -221,10 +233,12 @@ G06Q03 = Question(
     QuestionType.OPTIONS
 )
 
+G07 = Page('G07', 'Expected Impact', [])
+
 # Expected impact of having a Deutschlandticket on your mode of transportation (Not at all, A little, Very much; 3 Options)
 G07Q01 = Question(
     'G07Q01',
-    'Expected impact of having a Deutschlandticket on your mode of transportation',
+    'What is the expected impact of having a Deutschlandticket on your mode of transportation?',
     {
         'AO01': 'Not at all',
         'AO02': 'A little',
@@ -233,10 +247,12 @@ G07Q01 = Question(
     QuestionType.OPTIONS
 )
 
+G08 = Page('G08', 'Alternative', [])
+
 # Your idea for an alternative
 G08Q01 = Question(
     'G08Q01',
-    'Your idea for an alternative',
+    'What is your idea for an alternative?',
     {},
     QuestionType.TEXT
 )
