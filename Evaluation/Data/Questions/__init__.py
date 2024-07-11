@@ -121,7 +121,7 @@ G04Q01 = Question(
 # Frequency of using public transportation to get to university (Never to Always; 5 Options)
 G04Q02 = Question(
     'G04Q02',
-    'Use of public transportation to get to university?',
+    'Use of public transportation to get to university',
     {
         'AO01': 'Never',
         'AO02': 'Fewer than once a week',
@@ -135,7 +135,7 @@ G04Q02 = Question(
 # Frequency of using public transportation otherwise (Never to Always; 5 Options)
 G04Q03 = Question(
     'G04Q03',
-    'How often do you use public transportation otherwise?',
+    'How often do you use public transportation otherwise',
     {
         'AO01': 'Never',
         'AO02': 'Fewer than once a week',
@@ -223,7 +223,7 @@ G06Q02 = Question(
 # Stance on the named conditions for the full solidarity model: Fairness (Very unfair to Very fair; 4 Options)
 G06Q03 = Question(
     'G06Q03',
-    'Stance on the fairness of the FSM?',
+    'Stance on the fairness of the FSM',
     {
         'AO01': 'Very unfair',
         'AO02': 'Unfair',
@@ -238,7 +238,7 @@ G07 = Page('G07', 'Expected Impact', [])
 # Expected impact of having a Deutschlandticket on your mode of transportation (Not at all, A little, Very much; 3 Options)
 G07Q01 = Question(
     'G07Q01',
-    'Impact of having a D-Ticket on you?',
+    'Impact of having a D-Ticket on you',
     {
         'AO01': 'Not at all',
         'AO02': 'A little',
@@ -252,7 +252,7 @@ G08 = Page('G08', 'Alternative', [])
 # Your idea for an alternative
 G08Q01 = Question(
     'G08Q01',
-    'What is your idea for an alternative?',
+    'What is your idea for an alternative',
     {},
     QuestionType.TEXT
 )
