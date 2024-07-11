@@ -288,7 +288,9 @@ This section gives an exemplary visual overview of our Questionnaire. Pictograms
 \section{Code}
 The Graphs where created using Python with the data-analysis-framework \textbf{\texttt{pandas}} and \textbf{\texttt{matplotlib.pyplot}} for the graphs. The complete code can be found on the attached \href{https://github.com/MosaicsStudio/STUPA-Vollsolidar-Statistik}{git repository}.
 
+\section*{Filtering}
 
+To ensure the accuracy and relevance of the information, we implemented a filtering process based on the identification of illogical responses and the minimal time taken for the information text ( 15s). 
 \section{Participation and Representativeness}
 \subsection{Participation}
 \input{Build/TeX/ParticipationText.tex}
@@ -328,11 +330,11 @@ To determine the support of the \gls{dt} in general we used the following questi
     \item[\texttt{G03Q01}] \englishQuote{What is your opinion on the introduction of the Deutschlandticket under the full solidarity model at Reutlingen University?}
     \item[\texttt{G06Q01}] \englishQuote{Do you think the stated amount of 29.40 Euro per month (180 Euro per semester) is reasonable?}
 \end{enumerate}
+Both questions are asked after the participants have been informed about the \gls{dt} and the full solidarity model. The information text can be found in \ref{InfoText}. Additionally the time spent on the \ref*{InfoText} was measured and participants with less than 15 seconds were excluded from the analysis.\\\\
+Not adjusted for the group representations the overall results are visualized in \ref{fig:SupportDTFSM} and \ref{fig:AmountReasonable}:\\
+\ref{fig:SupportDTFSM} llustrates a strong interest in the \gls{dt}. Notably, 48.8\% of respondents are very supportive, 32.8\% are supportive, while only 8.2\% are opposed, and 10.3\% are very opposed.
 
-Not adjusted for the group representations the overall results are the following \ref{fig:SupportDTFSM} and \ref{fig:AmountReasonable}:
-\ref{fig:SupportDTFSM} demonstrates a significant interest in the Deutschlandticket. Specifically, 48.8\% of respondents are very supportive, 32.8\% are supportive, while only 8.2\% are opposed, and 10.3\% are very opposed.
-
-\ref{fig:SupportDTFSM} demonstrates a significant interest in the \gls{dt}. Specifically, 48.8\% of respondents are very supportive, 32.8\% are supportive, while only 8.2\% are opposed, and 10.3\% are very opposed. This indicates that there is strong overall support for the concept of the Deutschlandticket.
+\ref{fig:SupportDTFSM} demonstrates a significant interest in the \gls{dt}. Specifically, 48.8\% of respondents are \englishQuote{very supportive}, 32.8\% are \englishQuote{supportive}, while only 8.2\% are \englishQuote{opposed} and 10.3\% are \englishQuote{very opposed}. This indicates that there is strong overall support for the concept of the Deutschlandticket.
 
 This indicates that while there is strong overall support for the concept of the \gls{dt}, the current pricing structure may be a significant barrier to broader acceptance.
 
@@ -374,6 +376,7 @@ Additionally we asked the participants whether they perceived the fact that all 
 \begin{multicols}{2}
     \input{Build/TeX/Figures/ModesOfTransportByFaculty.tex}
     \columnbreak
+    Question G04Q01 is a ranking question, where participants were asked to rank their top 3 modes of transportation to the university. The data was then grouped by faculty to identify any differences in transportation habits across faculties. The results are visualized in \ref{fig:modesByFaculty}.
     Overall, the data shows that public transportation and cars are the predominant modes of transport among students. Public transportation is widely used, reflecting its accessibility and convenience. Bicycles are also popular, indicating a trend towards eco-friendly and cost-effective travel. Car usage varies significantly across faculties, suggesting differences in the need for flexibility and convenience. Here it would also be interesting to have more specific information on the home location of the students as suggested in \ref{FutureConsiderations}.
 \end{multicols}
 
@@ -384,6 +387,7 @@ Additionally we asked the participants whether they perceived the fact that all 
     \columnbreak
     \ref{fig:ModesOfTransportAgainstDistance} shows that car usage increases with distance. Furthermore this graph also shows that even in the range of $(0;10]$ km car usage still makes up roughly 40\%. According to Sabine Merkens, our mobility officer, this matches earlier findings from the mobility survey. 
     Interestingly, we can see an early peak in car usage between 20-30 km, which can be attributed to the proximity to the city center and the convenience of commuting within this range.
+    Car usage varies significantly across faculties, suggesting differences in the need for flexibility and convenience. It would also be interesting to have more specific information on the home location of the students as suggested in \ref{FutureConsiderations}.
 \end{multicols}
 
 
@@ -451,7 +455,6 @@ Below are some additional ideas and potential improvements.
     \item \englishQuote{How close is a participant living to a relevant public transportation node (e.g. train stations) }
     \item \englishQuote{Coordinates of participants home (drop pin on map)}
     \item \englishQuote{How much time is spent on each question $\rightarrow$ to check engagement with info-text}
-    \item \englishQuote{Control question to check if the participant understood the info-text}
     \item \englishQuote{Dynamic links for ad campaigns enable the measurement of campaign performance (e.g., approximately 15\% on Instagram). However, differentiation between email, posters, and tablets is currently not possible. It is also feasible to segment the results by buildings to identify where ads are most effective. The optimal scenario would involve using specific QR codes for each poster and logging the position of each poster.}
     
 \end{enumerate}
