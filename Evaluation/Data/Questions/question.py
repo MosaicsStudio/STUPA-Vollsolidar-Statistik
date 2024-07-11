@@ -6,6 +6,7 @@ Classes for the evaluation of the questionnaire
 
 from enum import Enum
 import glob
+import math
 import os
 from typing import Any, Callable, Dict, List, Tuple
 
@@ -142,6 +143,82 @@ class Correlation:
         ax.set_xlabel(self.question_a.text)
         ax.set_ylabel(self.question_b.text)
 
+    def bar_options_plot(self, fig: Figure, df: pd.DataFrame, title: str, normalize=False, graph_mode='bars', color_palette=[], counts_text_color='black', color_palette_mapped=[], custom_y_text=None, custom_x_text=None):
+        if self.question_a.type != QuestionType.OPTIONS:
+            raise ValueError(f"Question type '{self.question_a.type}' not supported for bar plot")
+            
+        FACTOR = 1
+        
+        if self.question_b.type != QuestionType.OPTIONS:
+            if self.question_b.type == QuestionType.RANKING:
+                FACTOR = sum(range(1, len(self.question_b.ranking_slots)+1))
+                df, self.question_b = self.question_b.merge_ranks(df)
+            else:
+                raise ValueError(f"Question type '{self.question_b.type}' not supported for bar plot")
+        
+        # Create a new DataFrame with the counts of the values
+        counts = df.groupby([self.question_a.code, self.question_b.code]).size().unstack().fillna(0)
+
+        # Rename the feature columns
+        counts.columns = [self.question_b.text_of_option(col) for col in counts.columns]
+
+        # Remove all columns that are None
+        try:
+            counts = counts.drop(columns=[None])
+        except KeyError:
+            pass
+
+        # Rename the group columns
+        counts.index = [self.question_a.text_of_option(col) for col in counts.index]
+
+        # Normalize the values
+        if normalize:
+            counts_norm = counts.div(counts.sum(axis=1), axis=0)
+        else:
+            # Divide by the factor
+            counts_norm = counts / FACTOR
+
+        # Plot the values
+        if graph_mode == 'bars':
+            ax = counts_norm.plot(kind='bar', stacked=True, figsize=(10, 6), title=title, ax=fig.gca(), color=color_palette)
+        else:
+            raise ValueError(f"Invalid type: {graph_mode}")
+        ax.set_xlabel(self.question_a.text if custom_x_text is None else custom_x_text)
+        ax.set_ylabel('Shares per group' if normalize else 'Count' if custom_y_text is None else custom_y_text)
+
+        # Get text size based on length
+        max_len = max([len(str(col)) for col in counts_norm.index])
+        text_size = 20 * (1 / (max_len / 10 + 1))
+
+        # Adjust x-Axis text-size and orientation to fit the image
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha='center', va='top', fontsize=text_size)
+
+        # Add Counts text of whole group to the top of the bars
+        if normalize and FACTOR == 1:
+            for group in counts_norm.index:
+                total_height = ax.get_ylim()[1]
+                bars_stacked_height = counts_norm.loc[group].sum()
+
+                center = (total_height - bars_stacked_height) / 2 + bars_stacked_height
+
+                label = ax.text(
+                    # At the position of the group
+                    x=counts_norm.index.get_loc(group),
+                    # At the top of the bar
+                    y=center if normalize else (counts_norm.loc[group].max()),
+                    s=f"{counts.loc[group].sum()/FACTOR:.0f}",
+                    ha='center', va='center' if normalize else 'bottom', color=counts_text_color
+                )
+
+                foreground = color_palette_mapped[group] if group in color_palette_mapped else 'black'
+
+                label.set_fontsize(10)
+                label.set_fontweight('bold')
+                label.set_color(foreground)
+
+        # Add the legend
+        ax.legend(title=self.question_b.text)
+
 class Page:
     __questions: List['Question']
     __code: str = ''
@@ -209,6 +286,7 @@ class Question:
     __ranking_slots: int = 0
 
     __cached_merged: List[Tuple[DataFrame, DataFrame, 'Question']] = []
+    __cached_num2bin: List[Tuple[DataFrame, DataFrame, 'Question']] = []
 
     __page: Page = None
 
@@ -237,8 +315,16 @@ class Question:
         # If Key is like 'AO{XX}' or an integer, return the text of the option
         if key in self.__answers:
             return self.__answers[key]
-        elif isinstance(key, int) and (key := f'AO{int(key):02}') in self.__answers:
-            return self.__answers[key]
+        elif isinstance(key, int):
+            if (key_str := f'AO{int(key):02}') in self.__answers:
+                return self.__answers[key_str]
+            else:
+                return list(self.__answers.values())[key]
+        elif isinstance(key, str) and key.startswith('AO') and key[2:].isnumeric():
+            if key in self.__answers:
+                return self.__answers[key]
+            else:
+                return list(self.__answers.values())[int(key[2:])]
         else:
             raise KeyError(f"Key '{key}' not found in question '{self.__text}'")
         
@@ -363,6 +449,22 @@ class Question:
 
         self.save_cache()
 
+    def get_cached_num2bin(self, df: DataFrame) -> Tuple[DataFrame, 'Question']:
+        if self.__cached_num2bin is None or len(self.__cached_num2bin) == 0:
+            if self.is_saved_cache_recent():
+                self.load_cache('Evaluation/cache_num2bin.pkl')
+
+        for cached in self.__cached_num2bin:
+            if cached[0].equals(df):
+                return cached[1], cached[2]
+
+        return None, None
+    
+    def add_cached_num2bin(self, df: DataFrame, merged: DataFrame, question: 'Question') -> None:
+        self.__cached_num2bin.append((df, merged, question))
+
+        self.save_cache('Evaluation/cache_num2bin.pkl')
+
     def merge_ranks(self, df: DataFrame) -> Tuple[DataFrame, 'Question']:
         assert self.__type == QuestionType.RANKING, "Question is not a ranking question"
 
@@ -418,25 +520,23 @@ class Question:
             ax = counts.plot(kind='pie', autopct='%1.1f%%', title=self.text, ax=fig.gca(), **kwargs)
             ax.axis('equal')
 
-            labels_groups = [node for node in ax.texts if '%' not in node.get_text()]
+            previous_label = None
 
-            for label in labels_groups:
+            for label in ax.texts:
                 label_text: str = label.get_text()
 
-                if '%' in label_text or label_text.isnumeric():
-                    foreground = 'white'
-                    background = 'black'
-                else:
-                    foreground = 'black'
-                    background = 'white'
+                foreground = 'black'
+                background = 'white'
 
-                    if label_text in colors_mapped:
-                        foreground = colors_mapped[label_text]
+                if label_text in colors_mapped:
+                    foreground = colors_mapped[label_text]
 
-                label.set_fontsize(12)
+                label.set_fontsize(10)
                 label.set_fontweight('bold')
                 label.set_bbox(dict(facecolor=background, alpha=0.5, edgecolor=foreground, boxstyle='round,pad=0.2'))
                 label.set_color(foreground)
+
+                previous_label = label_text
 
     def make_numeric(self, df: DataFrame) -> None:
         df[self.code] = pd.to_numeric(df[self.code], errors='coerce')
@@ -463,3 +563,40 @@ class Question:
         ax.legend([f'Mean: {mean:.2f}', f'Median: {median:.2f}'])
 
         df[self.code].plot.hist(bins=bins, title=self.text, ax=ax, **kwargs)
+
+    def numeric_to_bins_options(self, df: DataFrame, bin_size, min: float=None, max: float=None) -> Tuple[DataFrame, 'Question']:
+        if self.type != QuestionType.NUMBER:
+            raise ValueError(f"Question type '{self.type}' not supported for binning")
+        
+        if self.is_saved_cache_recent('Evaluation/cache_num2bin.pkl'):
+            cached_df, question_binned = self.get_cached_num2bin(df)
+
+            if cached_df is not None:
+                return cached_df, question_binned
+
+        self.make_numeric(df)
+
+        column_name = f'{self.code}_BINS'
+
+        # Get the min and max values
+        min_value = df[self.code].min() if min is None else min
+
+        # Get the max value
+        max_value = (df[self.code].max() if max is None else max) + bin_size
+
+        # Create the bins
+        bins = np.arange(min_value, max_value, bin_size)
+
+        # Create the labels
+        labels = [f'{int(bins[i])}-{int(bins[i+1])}' for i in range(len(bins) - 1)]
+
+        df_binned = df.copy()
+
+        # Create the new column
+        df_binned[column_name] = pd.cut(df[self.code], bins, labels=labels, include_lowest=True)
+
+        question_binned = Question(column_name, f'{self.text} (Binned)', {label: f'{label}km' for i, label in enumerate(labels)}, QuestionType.OPTIONS)
+
+        self.add_cached_num2bin(df, df_binned, question_binned)
+
+        return df_binned, question_binned

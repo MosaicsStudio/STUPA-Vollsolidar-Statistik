@@ -228,26 +228,25 @@ LimeSurvey was chosen for its feature richness. It also has a good reputation as
 This section gives an exemplary visual overview of our Questionnaire. Pictograms and arrows illustrate the possible actions.\\
 \vspace{20pt}
 
-\begin{comment}
 \begin{multicols}{2}
     {
         \begin{figure}[H]
             \centering
             \fbox{\includegraphics[width=.95\textwidth]{Content/Images/sureyouhaveachoice.png}}
             \caption{\texttt{G01Q01}}
-            \label{fig:enter-label}
+            \label{fig:sureyouhaveachoice}
         \end{figure}
         \begin{figure}[H]
             \centering
             \fbox{\includegraphics[width=.95\textwidth]{Content/Images/range.png}}
             \caption{\texttt{G02Q01-02}}
-            \label{fig:enter-label}
+            \label{fig:range}
         \end{figure}
         \begin{figure}[H]
             \centering
             \fbox{\includegraphics[width=.95\textwidth]{Content/Images/slider.png}}
             \caption{\texttt{G04Q04}}
-            \label{fig:enter-label}
+            \label{fig:slider}
         \end{figure}
         
     } \columnbreak {
@@ -255,19 +254,19 @@ This section gives an exemplary visual overview of our Questionnaire. Pictograms
             \centering
             \fbox{\includegraphics[width=.95\textwidth]{Content/Images/yesOrNo.png}}
             \caption{\texttt{G01Q03}}
-            \label{fig:enter-label}
+            \label{fig:yesOrNo}
         \end{figure}
         \begin{figure}[H]
             \centering
             \fbox{\includegraphics[width=.95\textwidth]{Content/Images/ranking.png}}
             \caption{\texttt{G04Q01}}
-            \label{fig:G04Q01RankingQuestionScreenshot}
+            \label{fig:ranking}
         \end{figure}
         \begin{figure}[H]
             \centering
             \fbox{\includegraphics[width=.95\textwidth]{Content/Images/infotext.png}}
             \caption{\texttt{G03}}
-            \label{fig:enter-label}
+            \label{fig:infotext}
         \end{figure}
     }
 \end{multicols}
@@ -281,13 +280,13 @@ This section gives an exemplary visual overview of our Questionnaire. Pictograms
         \end{figure}
     }
 \end{multicols}
-\end{comment}
+
+\pagebreak
+
 \chapter{Results}
 
-
-
 \section{Code}
-The Graphs where created using Python with the data-analysis-framework \textbf{\texttt{pandas}} and \textbf{\texttt{matplotlib.pyplot}} for the graphs. The complete code can be found on the attached \href{https://github.com/frederikbeimgraben/Statistik-und-Biometrie-Praesentation}{git repository}.
+The Graphs where created using Python with the data-analysis-framework \textbf{\texttt{pandas}} and \textbf{\texttt{matplotlib.pyplot}} for the graphs. The complete code can be found on the attached \href{https://github.com/MosaicsStudio/STUPA-Vollsolidar-Statistik}{git repository}.
 
 
 \section{Participation and Representativeness}
@@ -371,44 +370,40 @@ Additionally we asked the participants whether they perceived the fact that all 
 
 \pagebreak
 \subsection{Modes of Transportation by Faculty}
-\begin{comment}
-\begin{figure}[H]
-    \centering
-    \includesvg[width=0.7\textwidth]{Content/auswertungen_svgs/faculty_vs_transportation_rank_1.svg}
-    \caption{\texttt{G01Q02:G04Q01} Distance vs. Mode of Transportation}
-    \label{fig:modesByFaculty}
-\end{figure}
-\end{comment}
-Overall, the data shows that public transportation and cars are the predominant modes of transport among students. Public transportation is widely used, reflecting its accessibility and convenience. Bicycles are also popular, indicating a trend towards eco-friendly and cost-effective travel. Car usage varies significantly across faculties, suggesting differences in the need for flexibility and convenience. Here it would also be interesting to have more specific information on the home location of the students as suggested in \ref{FutureConsiderations}.
- 
-%So man muss bei ranking eben anders analysieren... erklaerung dazu HIER  dann die grafen und dann was das bedeutet dann kann man es noch mit 
 
-\subsection{Primary Mode of Transportation vs. Distance}
-\begin{comment}
-\begin{figure}[H]
-    \centering
-    \includesvg[width=0.7\textwidth]{Content/auswertungen_svgs/distance_vs_transportation.svg}
-    \caption{\texttt{G04Q01:G04Q05} Distance vs. Mode of Transportation}
-    \label{fig:distanceVsTransportation}
-\end{figure}
-\end{comment}
-\ref{fig:distanceVsTransportation} shows that car usage increases with distance. Furthermore this graph also shows that even in the range of $(0;10]$ km car usage still makes up roughly 40\%. According to Sabine Merkens, our mobility officer, this matches earlier findings from the mobility survey. 
-Interestingly, we can see an early peak in car usage between 20-30 km, which can be attributed to the proximity to the city center and the convenience of commuting within this range. This is followed by a noticeable dent between 30-40 km, which can be explained by the presence of the two nearby big cities, Stuttgart and Tübingen, and their well-developed infrastructure. These cities likely offer robust public transportation options and amenities that reduce the necessity of car usage. Consequently, residents and commuters might prefer using public transport over driving, leading to the observed reduction in car usage in this specific distance rang
+\begin{multicols}{2}
+    \input{Build/TeX/Figures/ModesOfTransportByFaculty.tex}
+    \columnbreak
+    Overall, the data shows that public transportation and cars are the predominant modes of transport among students. Public transportation is widely used, reflecting its accessibility and convenience. Bicycles are also popular, indicating a trend towards eco-friendly and cost-effective travel. Car usage varies significantly across faculties, suggesting differences in the need for flexibility and convenience. Here it would also be interesting to have more specific information on the home location of the students as suggested in \ref{FutureConsiderations}.
+\end{multicols}
+
+\subsection{Modes of Transportation against Distance}
+
+\begin{multicols}{2}
+    \input{Build/TeX/Figures/ModesOfTransportAgainstDistance.tex}
+    \columnbreak
+    \ref{fig:ModesOfTransportAgainstDistance} shows that car usage increases with distance. Furthermore this graph also shows that even in the range of $(0;10]$ km car usage still makes up roughly 40\%. According to Sabine Merkens, our mobility officer, this matches earlier findings from the mobility survey. 
+    Interestingly, we can see an early peak in car usage between 20-30 km, which can be attributed to the proximity to the city center and the convenience of commuting within this range.
+\end{multicols}
+
+
+This is followed by a noticeable dent between 30-40 km, which can be explained by the presence of Stuttgart, and their well-developed infrastructure. These cities likely offer robust public transportation options and amenities that reduce the necessity of car usage. Consequently, residents and commuters might prefer using public transport over driving, leading to the observed reduction in car usage in this specific distance range.
 
 However, it is important to note that these are mere speculations, as we currently lack concrete data to substantiate these claims. Therefore, in the "Future Considerations" \ref{FutureConsiderations} section, it is recommended that future surveys include a form of location data from respondents. This addition would provide more precise insights and help validate the observed patterns in car usage.
 
 This graph was created by dividing the data in to bins of 10 kilometers on the \texttt{G04Q05} column. We dropped the interval from 50 to 100 km due to too few data points.
 
+The high distances for ``On Foot'' are likely due to the fact that students may drive home for the weekend and live on the campus during the week. For the future we should therefore capture the metrics for each ranking slot separately.
+
+\pagebreak
+
 \subsection{Distance vs. Time per Mode of Transportation}
-\begin{comment}
-\begin{figure}[H]
-    \centering
-    \includesvg[width=0.7\textwidth]{Content/auswertungen_svgs/time_vs_distance_scatter.svg}
-    \caption{\texttt{G04Q05:G04Q06} Distance vs. Time}
-    \label{fig:distanceVsTime}
-\end{figure}
-\end{comment}
-In \ref{fig:distanceVsTime} we can see the relation between distance to the campus and time needed to reach campus for each primary mode of mobility. The x-axis is scaled logarithmically to increase readablity. From the graph we can deduct that those that use public transportation to reach campus need significantly more time for the same distance when compared to those that use a car.
+\begin{multicols}{2}
+    \input{Build/TeX/Figures/DistanceVsTime.tex}
+    \columnbreak
+    In \ref{fig:DistanceVsTime} we can see the relation between distance to the campus and time needed to reach campus for each primary mode of mobility. The x-axis is scaled logarithmically to increase readablity. From the graph we can deduct that those that use public transportation to reach campus need significantly more time for the same distance when compared to those that use a car.
+\end{multicols}
+
 
 \subsection{Primary Mode of Transportation vs. Money spent}
 \begin{comment}

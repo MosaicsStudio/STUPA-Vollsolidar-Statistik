@@ -34,14 +34,22 @@ print(f'Got DF with shape: {DF.shape}')
 # Filter out all incomplete responses (G03Q01 is not None)
 DF_COMPLETED = G03Q01.answered(DF)
 
+# Filter out all non-Students (G01Q01==AO01 => Student)
+DF_FILTERED_STUDENT = G01Q01.of_answer(DF_COMPLETED, 'AO01')
+
 # Filter out all participants that didn´t spend at least 5s on the G03 page
-DF_COMPLETED = G03.time.filter_numeric(
-    DF_COMPLETED,
-    lambda x: x >= 5
+DF_FILTERED_TIME = G03.time.filter_numeric(
+    DF_FILTERED_STUDENT,
+    lambda x: x >= 15
 )
 
-# Filter out all non-Students (G01Q01==AO01 => Student)
-DF_FILTERED = G01Q01.of_answer(DF_COMPLETED, 'AO01')
+# Filter out all above 26 that claim to have a student ticket G04Q07:(AO02, AO03) x G01Q04:Y (LIARS!)
+DF_FILTERED = DF_FILTERED_TIME[
+    ~(
+        (DF_FILTERED_TIME[G04Q07.code].isin(['AO02', 'AO03'])) &
+        (DF_FILTERED_TIME[G01Q04.code] == 'Y')
+    )
+]
 
 print(f'Filtered DF with shape: {DF_FILTERED.shape}')
 
@@ -55,7 +63,7 @@ with SaveFig('RoleDistribution', 'Actual Distribution of Roles in our Survey') a
 
 # Faculty Distribution (Pie)
 with SaveFig('FacultyDistribution', 'Actual Distribution to Faculties in our Survey') as fig:
-    DF_KNOWN_FACULTIES = G01Q02.of_answer(DF_FILTERED, ['AO01', 'AO02', 'AO03', 'AO04', 'AO05'])
+    DF_KNOWN_FACULTIES = G01Q02.of_answer(DF_FILTERED_STUDENT, ['AO01', 'AO02', 'AO03', 'AO04', 'AO05'])
 
     G01Q02.pie_plot(DF_KNOWN_FACULTIES, fig=fig, colors=FACULTIES_COLOR_PALETTE[1:], colors_mapped=COLOR_PALETTE_MAPPED, startangle=90)
 
@@ -85,23 +93,26 @@ with SaveFig('OptimumFacultyDistribution', 'Optimal Distribution') as fig:
 
     labels_groups = [node for node in ax.texts if '%' not in node.get_text()]
 
-    for label in labels_groups:
-        label_text = label.get_text()
+    previous_label = None
 
-        if '%' in label_text:
+    for label in ax.texts:
+        label_text: str = label.get_text()
+
+        foreground = 'black'
+        background = 'white'
+
+        if label_text in COLOR_PALETTE_MAPPED:
+            foreground = COLOR_PALETTE_MAPPED[label_text]
+        elif previous_label is not None and previous_label in COLOR_PALETTE_MAPPED:
             foreground = 'white'
             background = 'black'
-        else:
-            foreground = 'black'
-            background = 'white'
 
-            if label_text in COLOR_PALETTE_MAPPED:
-                foreground = COLOR_PALETTE_MAPPED[label_text]
-
-        label.set_fontsize(12)
+        label.set_fontsize(10)
         label.set_fontweight('bold')
         label.set_bbox(dict(facecolor=background, alpha=0.5, edgecolor=foreground, boxstyle='round,pad=0.2'))
         label.set_color(foreground)
+
+        previous_label = label_text
 
 # Age Distribution (Pie)
 with SaveFig('AgeDistribution', 'Age Distribution') as fig:
@@ -140,12 +151,51 @@ with SaveFig('AmountsConsideredReasonable', 'Amounts considered reasonable by th
 with SaveFig('Fairness', 'Is the proposed model fair?') as fig:
     G06Q03.pie_plot(G06Q03.answered(DF_FILTERED), fig=fig, colors=MAIN_COLOR_PALETTE)
 
+# Modes of transport by faculty
+with SaveFig('ModesOfTransportByFaculty', 'Modes of Transport by Faculty') as fig:
+    G01Q02.against(G04Q01).bar_options_plot(
+        fig,
+        DF_FILTERED,
+        title='Modes of Transport by Faculty',
+        color_palette=MAIN_COLOR_PALETTE,
+        custom_x_text='Faculty',
+        custom_y_text='Share',
+        normalize=True,
+        color_palette_mapped=COLOR_PALETTE_MAPPED
+    )
+
+# Modes of Transport against distance - bins of 5km
+with SaveFig('ModesOfTransportAgainstDistance', 'Modes of Transport against Distance') as fig:
+    DF_BINNED, G04Q05_BINNED = G04Q05.numeric_to_bins_options(DF_FILTERED, 10, max=50)
+
+    G04Q05_BINNED.against(G04Q01).bar_options_plot(
+        fig,
+        DF_BINNED,
+        title='Modes of Transport against Distance (Merged)',
+        color_palette=MAIN_COLOR_PALETTE,
+        custom_x_text='Distance (in km)',
+        custom_y_text='Share',
+        normalize=True
+    )
+
+# Above/below 26 Years against Ticket
+with SaveFig('AboveBelow26YearsAgainstTicket', 'Above/below 26 Years against Ticket') as fig:
+    G01Q04.against(G04Q07).bar_options_plot(
+        fig,
+        DF_FILTERED,
+        title='Above/below 26 Years against Ticket',
+        color_palette=MAIN_COLOR_PALETTE,
+        custom_x_text='Age Group',
+        custom_y_text='Share',
+        normalize=True
+    )
+
 # ========================
 # Misc.
 # ========================
 
 # Get the actual percentages per faculty
-FACULTY_PERCENTAGES = DF_FILTERED[G01Q02.code].value_counts(normalize=True)
+FACULTY_PERCENTAGES = DF_FILTERED_STUDENT[G01Q02.code].value_counts(normalize=True)
 
 # Remove -oth-
 FACULTY_PERCENTAGES = FACULTY_PERCENTAGES.drop('-oth-')
@@ -166,11 +216,19 @@ with SaveFig('FacultyDifference', 'Difference between Actual and Optimal Faculty
 
     ax.bar(FACULTY_DIFF.index, FACULTY_DIFF.values, color=FACULTIES_COLOR_PALETTE[1:])
 
-    ax.set_ylabel('Difference in %')
+    ax.set_ylabel('Deviation in % of total students')
     ax.set_title('Difference between Actual and Optimal Faculty Distribution')
 
     for i, v in enumerate(FACULTY_DIFF):
-        ax.text(i, v + 0.01, f'{v:.1%}', ha='center', va='bottom')
+        label = ax.text(i, v + 0.01, f'{v:.1%}', ha='center', va='bottom')
+
+        foreground = COLOR_PALETTE_MAPPED[FACULTY_DIFF.index[i]]
+        background = 'white'
+
+        label.set_fontsize(10)
+        label.set_fontweight('bold')
+        label.set_bbox(dict(facecolor=background, alpha=0.5, edgecolor=background, boxstyle='round,pad=0.2'))
+        label.set_color(foreground)
 
     # Y-Axis in percentage
     ax.yaxis.set_major_formatter('{x:.0%}')
@@ -191,8 +249,9 @@ STUDENTS_TOTAL = 5_000
 with open('Build/TeX/ParticipationText.tex', 'w') as f:
     f.write(f"""% TEX root = ../../Main.tex
 We initiated a total of {DF.shape[0]} surveys, out of which {DF_COMPLETED.shape[0]} were fully completed.
-This resulted in data from {DF_FILTERED.shape[0]} students, corresponding to around {(DF_FILTERED.shape[0] / STUDENTS_TOTAL) * 100:.0f}\% of the total student population on the main campus (approximately {STUDENTS_TOTAL} students).
 Since this survey focuses on students, all subsequent graphs will exclusively use data from the student group.
+This resulted in data from {DF_FILTERED_STUDENT.shape[0]} students, corresponding to around {(DF_FILTERED.shape[0] / STUDENTS_TOTAL) * 100:.0f}\% of the total student population on the main campus (approximately {STUDENTS_TOTAL} students).
+These were further filtered to exclude participants who spent less than 15 seconds on the information page. Furthermore, we excluded participants who claimed to have a student ticket but were above the age of 26. This yielded a final dataset of {DF_FILTERED.shape[0]} students.
 """)
     
 # Reasonable Amounts
