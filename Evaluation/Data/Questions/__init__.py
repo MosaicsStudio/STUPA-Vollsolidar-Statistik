@@ -215,7 +215,7 @@ G06Q01 = Question(
 # Stance on the named conditions for the full solidarity model: What amount is justified?
 G06Q02 = Question(
     'G06Q02[SQ001]',
-    'What amount is justified for the FSM?',
+    'What amount is justified for the FSM? (in €)',
     {},
     QuestionType.NUMBER
 )
