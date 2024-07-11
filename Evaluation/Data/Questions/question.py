@@ -5,6 +5,8 @@ Classes for the evaluation of the questionnaire
 """
 
 from enum import Enum
+import glob
+import os
 from typing import Any, Callable, Dict, List, Tuple
 
 import pandas as pd
@@ -14,6 +16,8 @@ from matplotlib.figure import Figure
 import numpy as np
 
 import matplotlib.pyplot as plt
+
+import pickle
 
 class Option:
     __text: str = ''
@@ -52,7 +56,7 @@ class Correlation:
         self.question_b = question_b
 
     def __str__(self) -> str:
-        return f'{self.question_a.text}\nvs. {self.question_b.text}'
+        return f'{self.question_a.text}\nagainst {self.question_b.text}'
     
     def __repr__(self) -> str:
         return f'Correlation({self.question_a}, {self.question_b})'
@@ -97,7 +101,7 @@ class Correlation:
             ax = group.plot.scatter(
                 x=self.question_a.code,
                 y=self.question_b.code,
-                title=f'{str(self)} for {category.text_of_option(key)}',
+                title=f'{str(self)}\nby {category.text}',
                 ax=ax,
                 color=colors[i] if i < len(colors) else None,
                 label=category.text_of_option(key),
@@ -323,7 +327,31 @@ class Question:
 
         return df[df[self.code] == answer]
     
+    def save_cache(self, path: str='Evaluation/cache.pkl') -> None:
+        # Pickle the cache
+        with open(path, 'wb') as f:
+            pickle.dump(self.__cached_merged, f)
+
+    def load_cache(self, path: str='Evaluation/cache.pkl') -> None:
+        # Load the cache
+        with open(path, 'rb') as f:
+            self.__cached_merged = pickle.load(f)
+
+    def is_saved_cache_recent(self, path: str='Evaluation/cache.pkl') -> bool:
+        if not os.path.exists(path):
+            return False
+
+        # Get the timestamp the newest .json file was created/modified
+        cache_time = os.path.getmtime(path)
+        source_time = os.path.getmtime(max(glob.iglob('Evaluation/Data/*.json'), key=os.path.getmtime))
+
+        return cache_time >= source_time
+
     def get_cached_merged(self, df: DataFrame) -> Tuple[DataFrame, 'Question']:
+        if self.__cached_merged is None or len(self.__cached_merged) == 0:
+            if self.is_saved_cache_recent():
+                self.load_cache()
+
         for cached in self.__cached_merged:
             if cached[0].equals(df):
                 return cached[1], cached[2]
@@ -332,6 +360,8 @@ class Question:
     
     def add_cached_merged(self, df: DataFrame, merged: DataFrame, question: 'Question') -> None:
         self.__cached_merged.append((df, merged, question))
+
+        self.save_cache()
 
     def merge_ranks(self, df: DataFrame) -> Tuple[DataFrame, 'Question']:
         assert self.__type == QuestionType.RANKING, "Question is not a ranking question"
@@ -391,9 +421,9 @@ class Question:
             labels_groups = [node for node in ax.texts if '%' not in node.get_text()]
 
             for label in labels_groups:
-                label_text = label.get_text()
+                label_text: str = label.get_text()
 
-                if '%' in label_text:
+                if '%' in label_text or label_text.isnumeric():
                     foreground = 'white'
                     background = 'black'
                 else:
@@ -414,3 +444,11 @@ class Question:
     def filter_numeric(self, df: DataFrame, filter: Callable[..., bool]) -> DataFrame:
         self.make_numeric(df)
         return df[filter(df[self.code])]
+    
+    def histogram(self, df: DataFrame, fig: Figure, bins: int=10, **kwargs: Any) -> None:
+        if self.type != QuestionType.NUMBER:
+            raise ValueError(f"Question type '{self.type}' not supported for histogram")
+
+        self.make_numeric(df)
+
+        df[self.code].plot.hist(bins=bins, title=self.text, ax=fig.gca(), **kwargs)

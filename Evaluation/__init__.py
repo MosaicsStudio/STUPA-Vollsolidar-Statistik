@@ -31,40 +31,44 @@ for file in files:
 
 print(f'Got DF with shape: {DF.shape}')
 
-# Filter out all non-Students (G01Q01==AO01 => Student)
-DF = G01Q01.of_answer(DF, 'AO01')
-
 # Filter out all incomplete responses (G03Q01 is not None)
-DF = G03Q01.answered(DF)
+DF_COMPLETED = G03Q01.answered(DF)
 
 # Filter out all participants that didn´t spend at least 5s on the G03 page
-DF = G03.time.filter_numeric(
-    DF,
+DF_COMPLETED = G03.time.filter_numeric(
+    DF_COMPLETED,
     lambda x: x >= 5
 )
 
-print(f'Filtered DF with shape: {DF.shape}')
+# Filter out all non-Students (G01Q01==AO01 => Student)
+DF_FILTERED = G01Q01.of_answer(DF_COMPLETED, 'AO01')
+
+print(f'Filtered DF with shape: {DF_FILTERED.shape}')
 
 # ========================
 # Evaluate the Data
 # ========================
 
+# Role Distribution (Pie)
+with SaveFig('RoleDistribution', 'Actual Distribution of Roles in our Survey') as fig:
+    G01Q01.pie_plot(DF, fig=fig, colors=MAIN_COLOR_PALETTE)
+
 # Faculty Distribution (Pie)
-with SaveFig('FacultyDistribution') as fig:
-    DF_KNOWN_FACULTIES = G01Q02.of_answer(DF, ['AO01', 'AO02', 'AO03', 'AO04', 'AO05'])
+with SaveFig('FacultyDistribution', 'Actual Distribution to Faculties in our Survey') as fig:
+    DF_KNOWN_FACULTIES = G01Q02.of_answer(DF_FILTERED, ['AO01', 'AO02', 'AO03', 'AO04', 'AO05'])
 
     G01Q02.pie_plot(DF_KNOWN_FACULTIES, fig=fig, colors=FACULTIES_COLOR_PALETTE[1:], colors_mapped=COLOR_PALETTE_MAPPED, startangle=90)
 
-# Optimum Faculty Distribution (Pie; Manually created)
-with SaveFig('OptimumFacultyDistribution') as fig:
-    OPT_DIST = {
-        'ESB': 0.414,
-        'INF': 0.206,
-        'TEC': 0.170,
-        'LS':  0.096,
-        'TEX': 0.071,
-    }
+OPT_DIST = {
+    'ESB': 0.414,
+    'INF': 0.206,
+    'TEC': 0.170,
+    'LS':  0.096,
+    'TEX': 0.071,
+}
 
+# Optimum Faculty Distribution (Pie; Manually created)
+with SaveFig('OptimumFacultyDistribution', 'Optimal Distribution') as fig:
     PAIRS = [(key, value) for key, value in OPT_DIST.items()]
 
     # Sort like in FACULTIES_COLOR_PALETTE[1:]
@@ -100,22 +104,89 @@ with SaveFig('OptimumFacultyDistribution') as fig:
         label.set_color(foreground)
 
 # Age Distribution (Pie)
-with SaveFig('AgeDistribution') as fig:
-    G01Q04.pie_plot(DF, fig=fig, colors=MAIN_COLOR_PALETTE)
+with SaveFig('AgeDistribution', 'Age Distribution') as fig:
+    G01Q04.pie_plot(DF_FILTERED, fig=fig, colors=MAIN_COLOR_PALETTE)
 
 # Modes of Transport (Pie, Merged)
-with SaveFig('ModesOfTransport') as fig:
-    G04Q01.pie_plot(DF, fig=fig, colors=MAIN_COLOR_PALETTE)
+with SaveFig('ModesOfTransport', 'Modes of Transport (merged)') as fig:
+    G04Q01.pie_plot(DF_FILTERED, fig=fig, colors=MAIN_COLOR_PALETTE)
 
 # Distance vs. Time (With Category G04Q01)
-with SaveFig('DistanceVsTime') as fig:
+with SaveFig('DistanceVsTime', 'Distance against Time by Modes of Transportation') as fig:
     G04Q05.against(
         G04Q06
     ).scatter_with_category(
-        DF,
+        DF_FILTERED,
         fig=fig,
         category=G04Q01,
         x_log=True,
         colors=MAIN_COLOR_PALETTE,
         show_regression=True
     )
+
+# Support Pie Chart
+with SaveFig('SupportDTFSM', 'Support of the D-Ticket in the FSM') as fig:
+    G03Q01.pie_plot(G03Q01.answered(DF_FILTERED), fig=fig, colors=MAIN_COLOR_PALETTE)
+
+# Amount Reasonable?
+with SaveFig('AmountReasonable', 'Is the proposed amount reasonable?') as fig:
+    G06Q01.pie_plot(G06Q01.answered(DF_FILTERED), fig=fig, colors=MAIN_COLOR_PALETTE)
+
+# Amounts considered reasonable by the students
+with SaveFig('AmountsConsideredReasonable', 'Amounts considered reasonable by the students') as fig:
+    G06Q02.histogram(G06Q02.answered(DF_FILTERED), fig=fig, bins=20, color=MAIN_COLOR_PALETTE[1])
+
+# ========================
+# Misc.
+# ========================
+
+# Get the actual percentages per faculty
+FACULTY_PERCENTAGES = DF_FILTERED[G01Q02.code].value_counts(normalize=True)
+
+# Remove -oth-
+FACULTY_PERCENTAGES = FACULTY_PERCENTAGES.drop('-oth-')
+
+# Map the faculty codes to the actual faculty names from the question
+FACULTY_PERCENTAGES.index = FACULTY_PERCENTAGES.index.map(G01Q02.text_of_option)
+
+# Subtract the optimal distribution from the actual distribution
+FACULTY_DIFF = FACULTY_PERCENTAGES - pd.Series(OPT_DIST)
+
+# Sort the series as in:
+# INF, LS, ESB, TEC, TEX
+FACULTY_DIFF = FACULTY_DIFF.reindex(['INF', 'LS', 'ESB', 'TEC', 'TEX'])
+
+# Plot as a bar chart
+with SaveFig('FacultyDifference', 'Difference between Actual and Optimal Faculty Distribution') as fig:
+    ax = fig.gca()
+
+    ax.bar(FACULTY_DIFF.index, FACULTY_DIFF.values, color=FACULTIES_COLOR_PALETTE[1:])
+
+    ax.set_ylabel('Difference in %')
+    ax.set_title('Difference between Actual and Optimal Faculty Distribution')
+
+    for i, v in enumerate(FACULTY_DIFF):
+        ax.text(i, v + 0.01, f'{v:.1%}', ha='center', va='bottom')
+
+    # Y-Axis in percentage
+    ax.yaxis.set_major_formatter('{x:.0%}')
+
+    # Add x-Axis/Line at 0
+    ax.axhline(0, color='black', linewidth=0.8)
+
+    # Add vertical padding for bars
+    ax.margins(y=0.2)
+
+# ========================
+# Auto TeX
+# ========================
+
+# Write the ParticipationText.tex
+STUDENTS_TOTAL = 5_000
+
+with open('Build/TeX/ParticipationText.tex', 'w') as f:
+    f.write(f"""% TEX root = ../../Main.tex
+We initiated a total of {DF.shape[0]} surveys, out of which {DF_COMPLETED.shape[0]} were fully completed.
+This resulted in data from {DF_FILTERED.shape[0]} students, corresponding to around {(DF_FILTERED.shape[0] / STUDENTS_TOTAL) * 100:.0f}\% of the total student population on the main campus (approximately {STUDENTS_TOTAL} students).
+Since this survey focuses on students, all subsequent graphs will exclusively use data from the student group.
+""")

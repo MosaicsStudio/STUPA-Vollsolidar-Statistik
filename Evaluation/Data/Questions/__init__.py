@@ -106,7 +106,7 @@ G04 = Page('G04', 'Transportation', [])
 # Primary mode of transportation (Car, By foot, Public transportation, Bicycle, Carpooled)
 G04Q01 = Question(
     'G04Q01',
-    'What is your primary mode of transportation?',
+    'Modes of Transportation',
     {
         'AO01': 'Car',
         'AO02': 'By foot',
@@ -149,7 +149,7 @@ G04Q03 = Question(
 # Amount of money spent on transportation per month (0 to 100+; 5 Options)
 G04Q04 = Question(
     'G04Q04[SQ001]',
-    'Money spent on transportation per month?',
+    'Money spent on transportation per month (in €)',
     {},
     QuestionType.NUMBER
 )
@@ -157,7 +157,7 @@ G04Q04 = Question(
 # Distance between home and university (0 to 100+; 5 Options)
 G04Q05 = Question(
     'G04Q05[SQ001]',
-    'Distance between home and university',
+    'Distance to university (in km)',
     {},
     QuestionType.NUMBER
 )
@@ -165,7 +165,7 @@ G04Q05 = Question(
 # Time from home to university (0 to 360+; 5 Options)
 G04Q06 = Question(
     'G04Q06[SQ001]',
-    'Time spent traveling from home to university',
+    'Time to university (in min)',
     {},
     QuestionType.NUMBER
 )

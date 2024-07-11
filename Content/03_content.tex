@@ -292,119 +292,30 @@ The Graphs where created using Python with the data-analysis-framework \textbf{\
 
 \section{Participation and Representativeness}
 \subsection{Participation}
-We initiated a total of 437 surveys, out of which 309 were fully completed. This resulted in data from 322 students (as shown in \ref{fig:countsPerRole}), corresponding to around 6\% of the total student population on the main campus (approximately 5,000 students). Since this survey focuses on students, all subsequent graphs will exclusively use data from the student group.
-\begin{comment}
+\input{Build/TeX/ParticipationText.tex}
+
 \begin{multicols}{2}
     {
-        \begin{figure}[H] %lieber als Pie Chart
-            \centering
-            \includesvg[width=.95\textwidth]{Content/auswertungen_svgs/role_counts.svg}
-            \caption{Role distribution}
-            \label{fig:countsPerRole}
-        \end{figure}
+        \input{Build/TeX/Figures/OptimumFacultyDistribution.tex}
     } \columnbreak {
-        \begin{figure}[H]
-            \centering
-            \includesvg[width=.765\textwidth]{Content/auswertungen_svgs/faculty_pie_chart.svg}
-            \caption{Distribution of Faculties at Reutlingen University}
-            \label{fig:facultiesDistribution}
-        \end{figure}
+        \input{Build/TeX/Figures/FacultyDistribution.tex}
     }
 \end{multicols}
-\end{comment}
-Through targeted marketing, we successfully achieved a balanced distribution of respondents, as seen in \ref{fig:countsPerFaculty}.  
-The  data, provided by the StuPa, is current as of March 2024. The faculty distributions are as follows: ESB 41.4\%, INF 20.6\%, TEC 17.0\%, TEX 11.4\%, LS 9.6\% - visualised in Figure \ref{fig:facultiesDistribution}.
 
-%FACULTIES_COLOR_PALETTE = [
-%    '#FFCC00', INF
-%    '#F08A00', LS
-%    '#13235B', ESB
-%    '#0076BD', TEC
-%    '#CD0529'  TEX
-%]
-\begin{comment}
-\begin{multicols}{2}
-    {
-        \begin{figure}[H]
-            \centering
-            \includesvg[width=.95\textwidth]{Content/auswertungen_svgs/faculty_counts.svg}
-            \caption{Faculty distribution}
-            \label{fig:countsPerFaculty}
-        \end{figure}
-    } \columnbreak {
-        \begin{figure}[H]
-            \centering
-            \includesvg[width=.95\textwidth]{Content/auswertungen_svgs/faculty_distribution_normalized.svg}
-            \caption{Faculty distribution adjusted for overall faculty size}
-            \label{fig:countsPerFacultyNormalized}
-        \end{figure}
-    }
-\end{multicols}
-\end{comment}
-
-
+Through targeted marketing, we successfully achieved a balanced distribution of respondents, as seen in \ref{fig:FacultyDistribution}.  
+The  data, provided by the StuPa, is current as of March 2024. The faculty distributions are as follows: \textbf{ESB 41.4\%, INF 20.6\%, TEC 17.0\%, TEX 11.4\%, LS 9.6\%} - visualised in Figure \ref{fig:OptimumFacultyDistribution}.
 
 \subsection{Representativeness}
-
-To determine if a sample size of 305 out of a population of 5000 students is representative, we need to assess the sample's adequacy and the confidence level it provides.
-
-\subsubsection*{Given Data:}
-
-\begin{enumerate}
-    \item[(i)] Total population $(N) = 5000$
-    \item[(ii)] Sample size $(n) = 305$
-    \item[(iii)] Desired margin of error $(E) = 5\%$ or $0.05$
-\end{enumerate}
-
-\subsubsection*{Calculation of Confidence Level}
-
-The confidence level can be calculated using the following relationship between the sample size, margin of error, and the z-score (which represents the confidence level):
-
-\[
-Z = \frac{E \cdot \sqrt{N \cdot (N - n)}}{\sqrt{n \cdot (N - 1)} \cdot \sqrt{p \cdot (1 - p)}}
-\]
-
-where:
-
-\begin{enumerate}
-    \item[] \( E \) is the margin of error ($0.05$)
-    \item[] \( N \) is the total population ($5000$)
-    \item[] \( n \) is the sample size ($305$)
-    \item[] \( p \) is the estimated proportion ($0.5$ for maximum variability)
-\end{enumerate}
-
-Step-by-Step Calculation:
-
-\begin{enumerate}
-    \item Calculate the denominator:
-    \[
-        \sqrt{n \cdot (N - 1)} = \sqrt{305 \cdot (5000 - 1)} = \sqrt{305 \cdot 4999} = \sqrt{1,524,695} \approx 1234.79
-    \]
-
-    \item Calculate the numerator:
-    \[
-        E \cdot \sqrt{N \cdot (N - n)} = 0.05 \cdot \sqrt{5000 \cdot (5000 - 305)} = 0.05 \cdot \sqrt{5000 \cdot 4695} = 0.05 \cdot \sqrt{23,475,000} = 0.05 \cdot 4845.10 \approx 242.26
-    \]
-
-    \item Calculate the z-score:
-    \[
-        Z = \frac{242.26}{1234.79} \approx 0.1962
-    \]
-\end{enumerate}
-
-To convert the z-score into a confidence level, we use the cumulative distribution function (CDF) of the standard normal distribution. A z-score of 0.1962 corresponds approximately to the 57.5th percentile in the normal distribution.
-
-Thus, the confidence level is:
-
-\[
-    \text{Confidence Level} = 2 \cdot (1 - \Phi(0.1962)) \approx 2 \cdot (1 - 0.577) = 2 \cdot 0.423 \approx 0.85 \text{ or } 85\%
-\]
-
-\subsubsection*{Conclusion}
-
-With a sample size of 322 and a margin of error of 5\%, the confidence level is approximately 85\%. While this provides some level of confidence, it is below the commonly desired 95\% confidence level. 
-
-The current (7/4/2024) confidence level of 85\% demonstrate that our current sample size of 322 is close to being representative, but slightly below the desired threshold of a 95\% for which a sample size of 357 would be needed.  
+\begin{multicols}{1}
+    \input{Build/TeX/Figures/FacultyDifference.tex}
+    \columnbreak
+    {
+        As seen in \ref{fig:FacultyDifference}, the faculty distribution of the survey participants approximately mirrors the actual distribution at Reutlingen University.
+        The deviation at the ESB-Faculty is likely due to them consisting by a large portion of international students, who might not have been reached by our marketing efforts.
+        Since at the time of writing this we don't know the total number of international students at the ESB faculty we can't verify this assumption.
+        Furthermore for some students the semester had already ended while the survey was still running.
+    }
+\end{multicols}
 
 \pagebreak
 \section{Findings}
@@ -420,46 +331,33 @@ To determine the support of the \acrshort{dt} in general we used the following q
     \item[\texttt{G06Q01}] \englishQuote{Do you think the stated amount of 29.40 Euro per month (180 Euro per semester) is reasonable?}
 \end{enumerate}
 
-Not adjusted for the group representations the overall results are the following \ref{fig:meinungDTInVollsolidarGenerell} and \ref{fig:positionOnTheProposedConditions}:
+Not adjusted for the group representations the overall results are the following \ref{fig:SupportDTFSM} and \ref{fig:AmountReasonable}:
 \ref{fig:meinungDTInVollsolidarGenerell} demonstrates a significant interest in the Deutschlandticket. Specifically, 48.8\% of respondents are very supportive, 32.8\% are supportive, while only 8.2\% are opposed, and 10.3\% are very opposed.
 
 \ref{fig:meinungDTInVollsolidarGenerell} demonstrates a significant interest in the \acrshort{dt}. Specifically, 48.8\% of respondents are very supportive, 32.8\% are supportive, while only 8.2\% are opposed, and 10.3\% are very opposed. This indicates that there is strong overall support for the concept of the Deutschlandticket.
 
 This indicates that while there is strong overall support for the concept of the \acrshort{dt}, the current pricing structure may be a significant barrier to broader acceptance.
-\begin{comment}
+
 \begin{multicols}{2}
     {
-        \begin{figure}[H]
-            \centering
-            \includesvg[width=1\textwidth]{Content/auswertungen_svgs/support_pie_chart.svg}
-            \caption{\texttt{G03Q01} Support of the \textit{\acrshort{dt}} in the \acrshort{fsm} in general}
-            \label{fig:meinungDTInVollsolidarGenerell}
-        \end{figure}
+        \input{Build/TeX/Figures/SupportDTFSM.tex}
     } \columnbreak {
-        \begin{figure}[H]
-            \centering
-            \includesvg[width=1\textwidth]{Content/auswertungen_svgs/support_conditions_pie_chart.svg}
-            \caption{\texttt{G06Q01}: Position on the proposed conditions (\ref{InfoText})}
-            \label{fig:positionOnTheProposedConditions}
-        \end{figure}
+        \input{Build/TeX/Figures/AmountReasonable.tex}
     }
 \end{multicols}
-\end{comment}
+
 \clearpage
 
-Since the pricing structure is of particular interest, participants who disagreed with G06Q1 (30\%, \ref{fig:positionOnTheProposedConditions}) were given the option to propose their own pricing. \ref{fig:betragVollsolidarAngemessenNum} visualizes these suggested price points, grouped by bins of 8 Euros. Interestingly, the most frequently suggested price points were 0 Euros and 100 Euros, with 25 participants selecting the 0-8 Euro range and 16 participants selecting the 96-104 Euro range. This may indicate that 
+Since the pricing structure is of particular interest, participants who disagreed with G06Q1 (30\%, \ref{fig:AmountReasonable}) were given the option to propose their own pricing. \ref{fig:betragVollsolidarAngemessenNum} visualizes these suggested price points, grouped by bins of 8 Euros. Interestingly, the most frequently suggested price points were 0 Euros and 100 Euros, with 25 participants selecting the 0-8 Euro range and 16 participants selecting the 96-104 Euro range. This may indicate that 
 
 \begin{enumerate}
     \item[\texttt{G06Q02}] \englishQuote{What amount do you think is appropriate? }
 \end{enumerate}
-\begin{comment}
-\begin{figure}[H]
-    \centering
-    \includesvg[width=0.6\textwidth]{Content/auswertungen_svgs/reasonable_amounts_histogram.svg}
-    \caption{\texttt{G03Q01} Appropriate amounts according to students}
-    \label{fig:betragVollsolidarAngemessenNum}
-\end{figure}
-\end{comment}
+
+\begin{multicols}{2}
+    \input{Build/TeX/Figures/AmountsConsideredReasonable.tex}
+\end{multicols}
+
 Additionally we asked the participants whether they perceived the fact that all students would have to pay the same amount as fair with:
 
 \begin{enumerate}

@@ -85,7 +85,7 @@ class SaveFig(Figure):
             frame = sys._getframe(1)
             frame.f_trace = self.trace
         else:
-            print(f'\x1b[1;32m[INFO]\x1b[0m {self.basename} is outdated.')
+            print(f'\x1b[1;33m[INFO]\x1b[0m {self.basename} is outdated.')
             return self
             
     def trace(self, frame, event, arg):
@@ -140,10 +140,11 @@ class SaveFig(Figure):
         include_function = 'includesvg' if self.format == 'svg' else 'includegraphics'
 
         with open(self.filename_tex, 'w') as f:
-            f.write(f"""
+            f.write(f"""% TEX root = ../../../Main.tex
+% Path: {self.filename_tex}
 \\begin{{figure}}[H]
     \\centering
-    \\{include_function}{{\\path{{{self.filename_svg}}}}} % Include the {self.format} file
+    \\{include_function}[width=0.95\\textwidth]{{{self.filename_svg}}} % Include the {self.format} file
     \\caption{{{self.caption}}}
     \\label{{fig:{self.basename}}}
 \\end{{figure}}""")
