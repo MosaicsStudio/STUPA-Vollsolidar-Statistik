@@ -212,5 +212,5 @@ VERY_UNFAIR = DF_FILTERED[G06Q03.code].value_counts(normalize=True).get('AO01', 
 
 with open('Build/TeX/Fairness.tex', 'w') as f:
     f.write(f"""% TEX root = ../../Main.tex
-Interestingly whilst 70\\% of participants thought the amount was appropriate and around 80\% supported the \\acrshort{{dt}} in the \\acrshort{{fsm}} more than half of all participants answering this question thought the concept was unfair with {VERY_UNFAIR:.0f}\\% deeming it very unfair.
+Interestingly whilst 70\\% of participants thought the amount was appropriate and around 80\% supported the \\gls{{dt}} in the \\gls{{fsm}} more than half of all participants answering this question thought the concept was unfair with {VERY_UNFAIR:.0f}\\% deeming it very unfair.
 """)
