@@ -4,8 +4,13 @@
 Save figures to the Output/Images folder.
 """
 
+import inspect
 import os
+import sys
 from matplotlib.figure import Figure
+
+class SkipWithBlock(Exception):
+    pass
 
 class SaveFig(Figure):
     """
@@ -73,8 +78,47 @@ class SaveFig(Figure):
 
     def __enter__(self):
         print(f'\x1b[1;32m[INFO]\x1b[0m Making {self.basename}')
-        return self
+        if not self.has_changed():
+            print(f'\x1b[1;32m[INFO]\x1b[0m {self.basename} is up to date.')
+            # Do some magic
+            sys.settrace(lambda *args, **keys: None)
+            frame = sys._getframe(1)
+            frame.f_trace = self.trace
+        else:
+            print(f'\x1b[1;32m[INFO]\x1b[0m {self.basename} is outdated.')
+            return self
+            
+    def trace(self, frame, event, arg):
+        raise SkipWithBlock()
     
+    def has_changed(self):
+        # Check if the TeX and SVG files exist
+        if not os.path.exists(self.filename_tex) or not os.path.exists(self.filename_svg):
+            return True
+
+        # Get last change timestamp for Evaluation/Data/Questions/__init__.py
+        last_change = os.path.getmtime('Evaluation/Data/Questions/__init__.py')
+
+        # Get last change timestamp for Evaluation/Data/*.json
+        last_change_json = max([
+            os.path.getmtime(
+                os.path.join('Evaluation/Data', file)
+            )
+            for file in os.listdir('Evaluation/Data') if file.endswith('.json')
+        ])
+    
+        # Get Last Changes for the TeX and SVG files
+        last_change_tex = os.path.getmtime(self.filename_tex)
+        last_change_svg = os.path.getmtime(self.filename_svg)
+
+        # Get Max of __init__.py and *.json
+        last_change = max(last_change, last_change_json)
+
+        # Get Min of TeX and SVG
+        last_change_tex = min(last_change_tex, last_change_svg)
+
+        return last_change > last_change_tex
+
     def make_svg(self):
         """
         Save the figure as SVG.
@@ -105,6 +149,12 @@ class SaveFig(Figure):
 \\end{{figure}}""")
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type is SkipWithBlock:
+            return True
+        elif exc_type is not None:
+            print(f'\x1b[1;31m[ERROR]\x1b[0m {exc_val}')
+            return False
+
         self.make_svg()
         self.make_tex()
         print(f'\x1b[1;32m[INFO]\x1b[0m Saved {self.basename}')

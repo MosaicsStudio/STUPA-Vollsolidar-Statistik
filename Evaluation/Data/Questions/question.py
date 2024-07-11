@@ -90,6 +90,9 @@ class Correlation:
         self.question_a.make_numeric(df)
         self.question_b.make_numeric(df)
 
+        labels: List[str] = []
+        ax_plot_params: List[Tuple[List[Any], Dict[str, Any]]] = []
+
         for i, (key, group) in enumerate(category.group_frame(df)):
             ax = group.plot.scatter(
                 x=self.question_a.code,
@@ -105,9 +108,26 @@ class Correlation:
                 x = group[self.question_a.code]
                 y = group[self.question_b.code]
 
+                # zip and sort by x
+                x, y = zip(*sorted(zip(x, y), key=lambda t: t[0]))
+
                 m, b = np.polyfit(x, y, 1)
 
-                ax.plot(x, m*x + b, color='black')
+                # Modify legend entry to have an m=... and b=... entry
+                labels.append(f'{category.text_of_option(key)} (m={m:.2f}, b={b:.2f})')
+
+                # Add the plot parameters for the regression line
+                ax_plot_params.append((
+                    [x, m * np.array(x) + b],
+                    {
+                        'color': colors[i] if i < len(colors) else None
+                    }
+                ))
+
+        ax.legend(labels, title=category.text, loc='upper left')
+
+        for plot_params in ax_plot_params:
+            ax.plot(*plot_params[0], **plot_params[1])
 
         if x_log:
             ax.set_xscale('log')
@@ -117,8 +137,6 @@ class Correlation:
         # Add Axis Labels
         ax.set_xlabel(self.question_a.text)
         ax.set_ylabel(self.question_b.text)
-
-        ax.legend(title=category.text, loc='upper left')
 
 class Page:
     __questions: List['Question']
@@ -185,6 +203,8 @@ class Question:
     __code: str = ''
     __type: str = ''
     __ranking_slots: int = 0
+
+    __cached_merged: List[Tuple[DataFrame, DataFrame, 'Question']] = []
 
     __page: Page = None
 
@@ -303,8 +323,23 @@ class Question:
 
         return df[df[self.code] == answer]
     
+    def get_cached_merged(self, df: DataFrame) -> Tuple[DataFrame, 'Question']:
+        for cached in self.__cached_merged:
+            if cached[0].equals(df):
+                return cached[1], cached[2]
+
+        return None, None
+    
+    def add_cached_merged(self, df: DataFrame, merged: DataFrame, question: 'Question') -> None:
+        self.__cached_merged.append((df, merged, question))
+
     def merge_ranks(self, df: DataFrame) -> Tuple[DataFrame, 'Question']:
         assert self.__type == QuestionType.RANKING, "Question is not a ranking question"
+
+        df_cached, question_cached = self.get_cached_merged(df)
+
+        if df_cached is not None:
+            return df_cached, question_cached
 
         # Options
         options = list(self.__answers.keys())
@@ -329,7 +364,11 @@ class Question:
                         for _ in range(weight_factor):
                             new_df.loc[len(new_df)] = [option, *row[1]]
 
-        return new_df, Question(column_name, f'{self.text} (Merged)', {key: option.text for key, option in self.__answers.items()}, QuestionType.OPTIONS)
+        question_merged = Question(column_name, f'{self.text} (Merged)', {key: option.text for key, option in self.__answers.items()}, QuestionType.OPTIONS)
+
+        self.add_cached_merged(df, new_df, question_merged)
+
+        return new_df, question_merged
     
     def against(self, other: 'Question') -> Correlation:
         return Correlation(self, other)
