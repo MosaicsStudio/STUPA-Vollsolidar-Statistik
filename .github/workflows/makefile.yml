@@ -11,6 +11,11 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    # Container thomasweise/texlive
+    container:
+      image: thomasweise/texlive
+      options: --user root
+
     steps:
     - uses: actions/checkout@v4
 
