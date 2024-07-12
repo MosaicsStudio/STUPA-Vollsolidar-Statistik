@@ -480,12 +480,11 @@ class Question:
 
         column_name = f'{self.code}_MERGED'
 
-        all_columns_list = list(df.columns)
-
-        # Calculate multipliers
-        factors = [1/x for x in range(1, self.__ranking_slots + 1)]
+        # Calculate multipliers for each rank
         factor = math.lcm(*[math.prod([x for x in range(1, self.__ranking_slots + 1) if x != i]) for i in range(1, self.__ranking_slots + 1)])
         multipliers = [int(factor / x) for x in range(1, self.__ranking_slots + 1)]
+
+        print(f'Multipliers: {multipliers}')
 
         # Create a DataFrame to store weighted rows
         expanded_rows = []

@@ -188,8 +188,45 @@ with SaveFig('ClimateFriendlinessImportanceVsTransport', 'Importance of climate 
     )
 
 # Expected impact of having a Deutschlandticket on your mode of transportation
-with SaveFig('ExpectedImpact', 'Expected Impact of having a Deutschlandticket on your mode of transportation') as fig:
+with SaveFig('ExpectedImpact', 'Would you expect an impact on your usage of\npublic transportation if you got a D-Ticket?') as fig:
     G07Q01.pie_plot(G07Q01.answered(DF_FILTERED), fig=fig, colors=MAIN_COLOR_PALETTE)
+
+# Perception on fairness against modes of transport
+with SaveFig('FairnessVsTransport', 'Perception on fairness against modes of transport') as fig:
+    G06Q03.against(G04Q01).bar_options_plot(
+        fig,
+        DF_FILTERED,
+        title='Perception on fairness against modes of transport',
+        color_palette=MAIN_COLOR_PALETTE,
+        custom_x_text='Perception on fairness',
+        custom_y_text='Share of modes of transport',
+        normalize=True
+    )
+
+# Support against modes of transport
+with SaveFig('SupportVsTransport', 'Support against modes of transport') as fig:
+    G03Q01.against(G04Q01).bar_options_plot(
+        fig,
+        DF_FILTERED,
+        title='Support against modes of transport',
+        color_palette=MAIN_COLOR_PALETTE,
+        custom_x_text='Support',
+        custom_y_text='Share of modes of transport',
+        normalize=True
+    )
+
+# Support against Faculty
+with SaveFig('SupportVsFaculty', 'Support against Faculty') as fig:
+    G03Q01.against(G01Q02).bar_options_plot(
+        fig,
+        DF_FILTERED_STUDENT,
+        title='Support against Faculty',
+        color_palette=FACULTIES_COLOR_PALETTE,
+        custom_x_text='Support',
+        custom_y_text='Share of Faculty',
+        normalize=True,
+        color_palette_mapped=COLOR_PALETTE_MAPPED
+    )
 
 # ========================
 # Misc.
@@ -264,7 +301,7 @@ BETWEEN_96_104 = DF_FILTERED[G06Q02.code].between(96, 104).sum()
 with open('Build/TeX/AmountsConsideredReasonable.tex', 'w') as f:
     f.write(f"""% TEX root = ../../Main.tex
 Since the pricing structure is of particular interest, participants who disagreed with G06Q1 (30\\%, \\ref{{fig:AmountReasonable}}) were given the option to propose their own pricing.
-\\ref{{fig:AmountsConsideredReasonable}} visualizes these suggested price points, grouped by bins of 8 Euros. Interestingly, the most frequently suggested price points were 0 Euros and 100 Euros, with {BETWEEN_0_8} participants selecting the 0-8 Euro range and {BETWEEN_96_104} participants selecting the 96-104 Euro range. This may indicate that 
+\\ref{{fig:AmountsConsideredReasonable}} visualizes these suggested price points, grouped by bins of 8 Euros. Interestingly, the most frequently suggested price points were 0 Euros and 100 Euros, with {BETWEEN_0_8} participants selecting the 0-8 Euro range and {BETWEEN_96_104} participants selecting the 96-104 Euro range.
 """)
     
 # Fairness
