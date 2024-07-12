@@ -324,6 +324,8 @@ class Question:
             if key in self.__answers:
                 return self.__answers[key]
             else:
+                if int(key[2:]) >= len(self.__answers):
+                    raise KeyError(f"Key '{key}' not found in question '{self.__text}'")
                 return list(self.__answers.values())[int(key[2:])]
         else:
             raise KeyError(f"Key '{key}' not found in question '{self.__text}'")
@@ -465,7 +467,7 @@ class Question:
 
         self.save_cache('Evaluation/cache_num2bin.pkl')
 
-    def merge_ranks(self, df: DataFrame) -> Tuple[DataFrame, 'Question']:
+    def merge_ranks(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, 'Question']:
         assert self.__type == QuestionType.RANKING, "Question is not a ranking question"
 
         df_cached, question_cached = self.get_cached_merged(df)
@@ -480,21 +482,25 @@ class Question:
 
         all_columns_list = list(df.columns)
 
-        # Create a new DataFrame for the ranking; Have one column per option with the numeric sum for the respective row and option
-        new_df = DataFrame(columns=[column_name, *all_columns_list])
+        # Calculate multipliers
+        factors = [1/x for x in range(1, self.__ranking_slots + 1)]
+        factor = math.lcm(*[math.prod([x for x in range(1, self.__ranking_slots + 1) if x != i]) for i in range(1, self.__ranking_slots + 1)])
+        multipliers = [int(factor / x) for x in range(1, self.__ranking_slots + 1)]
 
-        for rank in range(1, self.__ranking_slots + 1):
-            weight_factor = (self.__ranking_slots + 1 - rank)
+        # Create a DataFrame to store weighted rows
+        expanded_rows = []
 
-            # Get the column for the current rank
+        for rank, weight_factor in zip(range(1, self.__ranking_slots + 1), multipliers):
             column = self.ranking_nth(rank)
+            for option in options:
+                # Filter rows where the option is selected for the current rank
+                matched_rows = df[df[column] == option]
+                # Append each row 'weight_factor' times
+                for row in matched_rows.itertuples(index=False, name=None):
+                    expanded_rows.extend([option] + list(row) for _ in range(weight_factor))
 
-            for row in df.iterrows():
-                for option in options:
-                    if row[1][column] == option:
-                        # Add the answer `weight_factor` times to the new DataFrame
-                        for _ in range(weight_factor):
-                            new_df.loc[len(new_df)] = [option, *row[1]]
+        # Create a new DataFrame from the expanded rows
+        new_df = pd.DataFrame(expanded_rows, columns=[column_name, *df.columns])
 
         question_merged = Question(column_name, f'{self.text} (Merged)', {key: option.text for key, option in self.__answers.items()}, QuestionType.OPTIONS)
 

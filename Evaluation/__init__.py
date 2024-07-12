@@ -103,9 +103,6 @@ with SaveFig('OptimumFacultyDistribution', 'Optimal Distribution') as fig:
 
         if label_text in COLOR_PALETTE_MAPPED:
             foreground = COLOR_PALETTE_MAPPED[label_text]
-        elif previous_label is not None and previous_label in COLOR_PALETTE_MAPPED:
-            foreground = 'white'
-            background = 'black'
 
         label.set_fontsize(10)
         label.set_fontweight('bold')
@@ -178,17 +175,21 @@ with SaveFig('ModesOfTransportAgainstDistance', 'Modes of Transport against Dist
         normalize=True
     )
 
-# Above/below 26 Years against Ticket
-with SaveFig('AboveBelow26YearsAgainstTicket', 'Above/below 26 Years against Ticket') as fig:
-    G01Q04.against(G04Q07).bar_options_plot(
+# Importance of climate friendliness in transport decisions vs. modes of transport
+with SaveFig('ClimateFriendlinessImportanceVsTransport', 'Importance of climate friendliness in transport decisions vs. modes of transport') as fig:
+    G07Q01.against(G04Q01).bar_options_plot(
         fig,
         DF_FILTERED,
-        title='Above/below 26 Years against Ticket',
+        title='Importance of climate friendliness in transport decisions vs. modes of transport',
         color_palette=MAIN_COLOR_PALETTE,
-        custom_x_text='Age Group',
-        custom_y_text='Share',
+        custom_x_text='Importance of climate friendliness in transport decisions',
+        custom_y_text='Share of modes of transport',
         normalize=True
     )
+
+# Expected impact of having a Deutschlandticket on your mode of transportation
+with SaveFig('ExpectedImpact', 'Expected Impact of having a Deutschlandticket on your mode of transportation') as fig:
+    G07Q01.pie_plot(G07Q01.answered(DF_FILTERED), fig=fig, colors=MAIN_COLOR_PALETTE)
 
 # ========================
 # Misc.
@@ -272,4 +273,64 @@ VERY_UNFAIR = DF_FILTERED[G06Q03.code].value_counts(normalize=True).get('AO01', 
 with open('Build/TeX/Fairness.tex', 'w') as f:
     f.write(f"""% TEX root = ../../Main.tex
 Interestingly whilst 70\\% of participants thought the amount was appropriate and around 80\% supported the \\gls{{dt}} in the \\gls{{fsm}} more than half of all participants answering this question thought the concept was unfair with {VERY_UNFAIR:.0f}\\% deeming it very unfair.
+""")
+
+
+# How often do these words appear in the last question (Free Text); Create Table in LaTeX
+WORDS = {
+    'For Free': ['umsonst', 'kostenlos', '0€', '0 €', '0 euro', 'null euro', 'free'],
+    'Expensive': ['teuer', 'zu teuer', 'zu viel', 'expensive'],
+    'Unfair': ['unfair', 'ungerecht', 'unfairness', 'unfairly'],
+    'Partial Solidarity': ['selbst entscheiden', 'selbst kaufen', 'selbst kaufen', 'teil solidar', 'partial solidarity', 'teilsolidar'],
+}
+
+COUNTS = {key: 0 for key in WORDS.keys()}
+
+for key, words in WORDS.items():
+    COUNTS[key] = DF_FILTERED[
+        DF_FILTERED[G08Q01.code].str.contains('|'.join(words), case=False, na=False)
+    ].shape[0]
+
+COUNTS_TUPLES_SORTED = sorted(COUNTS.items(), key=lambda x: x[1], reverse=True)
+
+# Write the LaTeX Table
+with open('Build/TeX/WordCountTable.tex', 'w') as f:
+    f.write(f"""% TEX root = ../../Main.tex
+\\begin{{table}}[H]
+\\centering
+\\begin{{tabular}}{{|l|c|}}
+\\hline
+Word Group & Count \\\\
+\\hline
+""")
+
+    for key, value in COUNTS_TUPLES_SORTED:
+        f.write(f'{key} & {value} \\\\\n')
+
+    f.write("""\\hline
+\\end{tabular}
+\\caption{Counts per Word Group in the last question (Free Text)}
+\\label{tab:WordCountTable}
+\\end{table}
+""")
+
+## Groups used
+with open('Build/TeX/WordCountGroupsTable.tex', 'w') as f:
+    f.write(f"""% TEX root = ../../Main.tex
+\\begin{{table}}[H]
+\\centering
+\\begin{{tabular}}{{|l|c|}}
+\\hline
+Word Group & Words \\\\
+\\hline
+""")
+
+    for key, value in WORDS.items():
+        f.write(f'{key} & {" \\\\\n & ".join(v.replace('€', '\\texttt{\\{euro\\}}') for v in value)} \\\\\n')
+
+    f.write("""\\hline
+\\end{tabular}
+\\caption{Groups used in the Word Count Table}
+\\label{tab:WordCountGroupsTable}
+\\end{table}
 """)

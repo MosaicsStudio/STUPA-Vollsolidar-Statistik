@@ -241,8 +241,8 @@ G07Q01 = Question(
     'Impact of having a D-Ticket on you',
     {
         'AO01': 'Not at all',
-        'AO02': 'A little',
-        'AO03': 'Very much'
+        'AO04': 'A little',
+        'AO05': 'Very much'
     },
     QuestionType.OPTIONS
 )
