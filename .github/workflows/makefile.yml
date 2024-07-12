@@ -47,4 +47,17 @@ jobs:
         name: SVGs
         path: |
           Build/Images/*.svg
-          
+
+    # English PDF Single Artifact
+    - name: English PDF Single Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: English PDF
+        path: Output/English/Main.pdf
+
+    # German PDF Single Artifact
+    - name: German PDF Single Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: German PDF
+        path: Output/German/Main.pdf
