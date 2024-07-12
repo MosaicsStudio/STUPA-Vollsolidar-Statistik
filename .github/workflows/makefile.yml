@@ -13,7 +13,7 @@ jobs:
 
     # Container thomasweise/texlive
     container:
-      image: thomasweise/texlive
+      image: texlive/texlive:latest
       options: --user root
 
     steps:
