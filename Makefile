@@ -36,7 +36,8 @@ all: compile
 venv:
 ifeq ($(shell [ -d "$(VENV)" ] && echo 1 || echo 0), 0)
 	python3 -m venv $(VENV)
-	source $(VENV)/bin/activate && pip install -r requirements.txt
+	@until [ -f "$(VENV)/bin/pip" ]; do sleep 1; done
+	$(VENV)/bin/pip install -r requirements.txt
 endif
 
 compile: german english
