@@ -23,5 +23,9 @@ jobs:
     - name: Install pyvenv
       run: apt-get update && apt-get install -y python3-venv
 
+    # Install InkScape
+    - name: Install InkScape
+      run: apt-get update && apt-get install -y inkscape
+
     - name: Compile
       run: make compile
