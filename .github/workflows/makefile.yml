@@ -33,7 +33,7 @@ jobs:
 
     # Save artifacts (PDF)
     - name: Save artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: PDFs
         path: |
@@ -42,7 +42,7 @@ jobs:
 
     # Save artifacts (SVG)
     - name: Save artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: SVGs
         path: |
@@ -50,14 +50,14 @@ jobs:
 
     # English PDF Single Artifact
     - name: English PDF Single Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: English PDF
         path: Output/English/Main.pdf
 
     # German PDF Single Artifact
     - name: German PDF Single Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: German PDF
         path: Output/German/Main.pdf
