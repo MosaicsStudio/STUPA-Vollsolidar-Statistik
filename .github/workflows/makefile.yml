@@ -27,5 +27,24 @@ jobs:
     - name: Install InkScape
       run: apt-get update && apt-get install -y inkscape
 
+    # Compile
     - name: Compile
       run: make compile
+
+    # Save artifacts (PDF)
+    - name: Save artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: PDFs
+        path: |
+          Output/English/Main.pdf
+          Output/German/Main.pdf
+
+    # Save artifacts (SVG)
+    - name: Save artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: SVGs
+        path: |
+          Build/Images/*.svg
+          
