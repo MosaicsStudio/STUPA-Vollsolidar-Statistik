@@ -1,6 +1,4 @@
-# Basisrepo für Zusammenfassungen
-
-Zusammenfassung für eine Vorlesung oder Prüfung an der Fachhochschule Reutlingen.
+# Umfrage des STUPAs zur Mobilität der Studierenden und zur Zustimmung zum D-Ticket im Vollsolidarmodell
 
 ## Building
 
